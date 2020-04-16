@@ -122,7 +122,7 @@ describe('userRepo', () => {
 
     });
 
-    test('should invoke error callback when addNewUser is given a new user with a conflicting username', done => {
+    test('should invoke error callback when addNewUser is given a new user with a conflicting email', done => {
         
         let conflictingMockUser = new User(0, 'a', 'a', 'a', 'a', 'aanderson@revature.com', new Date());
         
