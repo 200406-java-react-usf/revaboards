@@ -1,5 +1,6 @@
 const data = require('../data/user-db');
 const errors = require('../errors/errors');
+const mailWorker = require('../util/mail-worker');
 
 module.exports = (function() {
 
@@ -133,6 +134,8 @@ module.exports = (function() {
         
                 newUser.id = (data.length) + 1;
                 data.push(newUser);
+
+                mailWorker.emit('newRegister', newUser.email);
         
                 cb(null, newUser);
         
@@ -152,7 +155,7 @@ module.exports = (function() {
                 return;
             }
         
-            let invalid = !Object.keys(updatedUser).every(key => updatedUser[key]);
+            let invalid = !Object.values(updatedUser).every(val => val);
         
             if (invalid) {
                 cb(new errors.BadRequestError('Invalid property values found in provided user.'));
