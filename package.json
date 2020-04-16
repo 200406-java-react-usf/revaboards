@@ -1,0 +1,16 @@
+{
+  "name": "revaboards",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "author": "Wezley Singleton",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^25.3.0"
+  }
+}
