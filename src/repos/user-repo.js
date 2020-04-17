@@ -33,25 +33,29 @@ module.exports = (function() {
             }, 250);
         }
     
-        const getUserById = (id, cb) => {
-    
+        const getUserById = (id) => {
+            let fn; //declared fn
+            let user; //declared user
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
-                cb(new errors.BadRequestError());
-                return;
+                return function (cb){
+                    cb(new errors.BadRequestError());
+                };
             }
            
             setTimeout(() => {
         
-                const user = {...data.filter(user => user.id === id).pop()};
-                
-                if (!user) {
-                    cb(new errors.ResourceNotFoundError());
-                    return;
+                user = {...data.filter(user => user.id === id).pop()}; //retrieves the user by the id
+                if (JSON.stringify(user) === '{}') {  //check if it actually return a user
+                    fn(new errors.ResourceNotFoundError()); //since we are inside the setTimeout we set the fn = resource error
                 }
-        
-                cb(null, user);
-        
+                else if(fn){ //if the fn is empty then set it to our retrieved user
+                         fn(user); 
+                    }
             }, 250);
+            return function(cb){ //we return a callback function
+                fn = cb; // if we havent gotten a result yet then we set fn = to our callback function
+                
+            }
         
         }
         
