@@ -41,10 +41,11 @@ const mailWorker = new MailWorker();
 
 mailWorker.on('newRegister', function(recipientEmail) {
 
-    console.log(`Sending a welcome email to ${recipientEmail} using SMTP server at ${this.server} on port ${this.port}.`)
-    // [pretend to send a message]
+    console.log(`Sending a welcome email to ${recipientEmail} using SMTP server at ${this.server} on port ${this.port}`);
+
+    // pretend to send a message
     setTimeout(() => {
-        console.log('Message succesfully sent!');
+        console.log('Message successfully sent!');
     }, 1000);
 });
 

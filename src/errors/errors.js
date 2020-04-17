@@ -19,7 +19,7 @@ class BadRequestError {
 
     constructor(reason) {
         this.message = 'Invalid parameters provided.';
-        this.reason = reason;
+        reason ? (this.reason = reason) : this.reason = 'Unspecified reason.';
     }
 }
 
