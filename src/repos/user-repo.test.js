@@ -1,5 +1,6 @@
 const sut = require('./user-repo');
 const User = require('../models/user');
+const error = require('../errors/errors')
 
 describe('userRepo', () => {
 
@@ -19,21 +20,35 @@ describe('userRepo', () => {
         });
     });
 
-    test('should return correct user when getUserById is given a valid id', done => {
-        expect.assertions(3);
-        sut.getInstance().getUserById(1, (err, result) => {
-            expect(err).toBeFalsy();
+    test('should return correct user when getUserById is given a valid id', done => {  
+        expect.assertions(2);
+        let sutTest = sut.getInstance().getUserById(1);
+        sutTest((result) => {
             expect(result).toBeTruthy();
             expect(result.id).toBe(1);
             done();
         });
+        
     });
 
     test('should invoke error callback when getUserById is given an invalid id', done => {
+        let err1 = new error.BadRequestError();
         expect.assertions(2);
-        sut.getInstance().getUserById(-1, (err, result) => {
-            expect(err).toBeTruthy();
-            expect(result).toBeFalsy();
+        let sutTest = sut.getInstance().getUserById(-1);
+        sutTest((result) => {
+            expect(result).toBeTruthy();
+            expect(result).toStrictEqual(err1);
+            done();
+        });
+    });
+
+    test('should invoke error callback when getUserById is not found', done => {
+        let err2 = new error.ResourceNotFoundError();
+        expect.assertions(2);
+        let sutTest = sut.getInstance().getUserById(7);
+        sutTest((result) => {
+            expect(result).toBeTruthy();
+            expect(result).toStrictEqual(err2);
             done();
         });
     });
