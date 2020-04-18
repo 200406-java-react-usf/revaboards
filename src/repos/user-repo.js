@@ -33,7 +33,7 @@ module.exports = (function() {
             }, 250);
         }
     
-        const getUserById = (id) => {
+        const getUserById = (id) => { //used thunks to return the result
             let fn; //declared fn
             let user; //declared user
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
@@ -45,6 +45,7 @@ module.exports = (function() {
             setTimeout(() => {
         
                 user = {...data.filter(user => user.id === id).pop()}; //retrieves the user by the id
+                
                 if (JSON.stringify(user) === '{}') {  //check if it actually return a user
                     fn(new errors.ResourceNotFoundError()); //since we are inside the setTimeout we set the fn = resource error
                 }
@@ -59,25 +60,45 @@ module.exports = (function() {
         
         }
         
-        const getUserByUsername = (un, cb) => {
+        const getUserByUsername = (un) => {
         
-            if (typeof un !== 'string' || !un) {
-                cb(new errors.BadRequestError());
-                return;
-            }
+            // if (typeof un !== 'string' || !un) {
+            //     cb(new errors.BadRequestError());
+            //     return;
+            // }
            
-            setTimeout(() => {
+            // setTimeout(() => {
         
-                const user = {...data.filter(user => user.username === un).pop()};
+            //     const user = {...data.filter(user => user.username === un).pop()};
                 
-                if (Object.keys(user).length == 0) {
-                    cb(new errors.ResourceNotFoundError());
-                    return;
+            //     if (Object.keys(user).length == 0) {
+            //         cb(new errors.ResourceNotFoundError());
+            //         return;
+            //     }
+            //     cb(null, user);
+            // }, 250);
+            let bad = new errors.BadRequestError();
+            let resource = new errors.ResourceNotFoundError();
+            return new Promise((resolve, reject) => {
+                
+                if (typeof un !== 'string' || !un) {
+                    resolve(bad);
+                    //reject(bad);                    
                 }
-        
-                cb(null, user);
-        
-            }, 250);
+
+                setTimeout(() => {
+                    
+                    const user = {...data.filter(user => user.username === un).pop()};
+                    if (Object.keys(user).length == 0) {
+                        resolve(resource);
+                        //reject(resource);
+                    }
+                    else {
+                        resolve(user);
+                    }
+                    
+                })
+            })
         
         }
         
