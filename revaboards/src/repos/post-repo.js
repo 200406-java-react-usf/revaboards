@@ -1,29 +1,44 @@
-const data = require('../data/post-db');
-
-const getPostById = function(id, cb) {
+// implement and export the methods: getPostById and getPostsByPosterId
+const postData = require('../data/post-db');
+module.exports = (function(){
     
-    setTimeout(function() {
-
-        if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
-            cb(new errorModule.BadRequestError(), null);
-            return;
+    let instance;
+    
+    function init() {
+        const getPostById = (id, cb) => {
+            setTimeout(() => {
+                if (!id || id <= 0) throw new Error('Oh no! You gave me bad data!');
+                const post = postData.filter(post => post.id === id).pop();
+                if (!post) throw new Error('No post found with provided id!');
+                cb(post);
+            }, 250);
         }
 
-        const post = data.filter(post => post.id === id).pop();
+        const getPostsByPosterId = (posterId, cb) => {
+            setTimeout(() => {
+                const posts = postData.filter(post => post.posterId === posterId);
+                cb(posts);
+            }, 250);
+        }
 
-        callback(null, post);
-        
-    }, 250);
-}
+        const addPost = function(title, body, posterId){
+            console.log(postData.length);
+            let id = null;
+            id = postData.length +1;
+            postData.push(new Post(id, title, body, posterId));
+            console.log(postData);
+        }
 
-const getPostsByPosterId = function(posterId, callback) {
-    setTimeout(function() {
-        const posts = data.filter(post => post.poster == posterId);
-        callback(posts);
-    }, 250);
-}
+        return {
+            getPostById,
+            getPostsByPosterId,
+            addPost
+        };
+    }
 
-module.exports = {
-    getPostById,
-    getPostsByPosterId
-};
+    return{
+        getInstance: function() {
+            return !instance ? instance = init() : instance;
+        }
+    }
+})
