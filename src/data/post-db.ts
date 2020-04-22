@@ -1,7 +1,7 @@
-const Post = require('../models/post');
+import { Post } from '../models/post';
 let id = 1;
 
-module.exports = [
+export default [
     new Post(id++, 'hello world!', 'This is my first post! Huzzah!', 1),
     new Post(id++, 'this is cool', 'NodeJS is so awesome! It uses the same JS engine as Google Chrome: V8', 1),
     new Post(id++, 'no limits', 'NodeJS is a runtime environment that lets JS run outside of the browser!', 2),
