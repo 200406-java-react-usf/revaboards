@@ -1,7 +1,7 @@
-const User = require('./src/models/user');
+const User = require('./models/user');
 
-const userRepo = require('./src/repos/user-repo');
-const mailWorker = require('./src/util/mail-worker');
+const userRepo = require('./repos/user-repo');
+const mailWorker = require('./util/mail-worker');
 
 // let test = new User(0, 'test', 'test', 'test', 'test', 'test@revature.com', new Date('01/01/1990'));
 // userRepo.addNewUser(test, newUser => {
