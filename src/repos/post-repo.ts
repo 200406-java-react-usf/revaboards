@@ -6,17 +6,13 @@ import { BadRequestError, ResourceNotFoundError, ResourcePersistenceError, NotIm
 export class PostRepository implements CrudRepository<Post> {
 
     getAll(): Promise<Post[]> {
-
         return new Promise((resolve,reject) => {
-
             setTimeout(() => {
 
                 let posts: Post[] = [];
                 
                 for (let post of data){
-
                     posts.push({...post});
-
                 }
 
                 if(posts.length === 0){
@@ -27,13 +23,10 @@ export class PostRepository implements CrudRepository<Post> {
                 resolve(posts);
 
             }, 1000);
-
         })
-
     }
 
     getById(id: number): Promise<Post> {
-    
         return new Promise<Post>((resolve, reject) => {
     
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
@@ -61,9 +54,7 @@ export class PostRepository implements CrudRepository<Post> {
     save(newPost: Post): Promise<Post> {
 
         return new Promise<Post>((resolve,reject) => {
-
             reject(new NotImplementedError());
-
         });
 
     }
@@ -71,9 +62,7 @@ export class PostRepository implements CrudRepository<Post> {
     update(updatedPost: Post): Promise<boolean> {
 
         return new Promise<boolean>((resolve,reject) => {
-
             reject(new NotImplementedError());
-
         });
 
     }
@@ -81,9 +70,7 @@ export class PostRepository implements CrudRepository<Post> {
     deleteById(id: number): Promise<boolean> {
 
         return new Promise<boolean>((resolve,reject) => {
-
             reject(new NotImplementedError());
-
         });
 
     }
@@ -100,9 +87,7 @@ export class PostRepository implements CrudRepository<Post> {
             setTimeout(() => {
 
                 const posts = data.filter(post => post.posterId == pid);
-
                 resolve(posts);
-                
 
             }, 1000);
 
@@ -115,8 +100,3 @@ export class PostRepository implements CrudRepository<Post> {
 
 
 
-
-// module.exports = {
-//     getPostById,
-//     getPostsByPosterId
-// };
