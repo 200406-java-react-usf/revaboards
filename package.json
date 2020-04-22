@@ -9,7 +9,9 @@
   },
   "author": "Wezley Singleton",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "typescript": "^3.8.3"
+  },
   "devDependencies": {
     "jest": "^25.3.0"
   }
