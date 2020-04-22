@@ -1,17 +1,19 @@
-import { CrudRepository } from './crud-repo';
+import data from '../data/post-db';
 import { Post } from '../models/post';
-import  {
+import { CrudRepository } from './crud-repo';
+import { 
+    BadRequestError, 
     ResourceNotFoundError,
-    NotImplementedError,
-    BadRequestError
-
-}  from '../errors/errors';
-import data from '../data/post-db'
+    ResourcePersistenceError,
+    NotImplementedError
+} from '../errors/errors';
 
 export class PostRepository implements CrudRepository<Post> {
 
     getAll(): Promise<Post[]> {
-        return new Promise((resolve, reject) => {
+
+        return new Promise((resolve, reject)  => {
+
             setTimeout(() => {
 
                 let posts: Post[] = [];
@@ -27,78 +29,68 @@ export class PostRepository implements CrudRepository<Post> {
 
                 resolve(posts);
 
+                
             }, 1000);
-        })
+
+        });
     }
-    
+
     getById(id: number): Promise<Post> {
     
-        return new Promise((resolve, reject) => {
+        return new Promise<Post>((resolve, reject) => {
 
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
                 reject(new BadRequestError());
                 return;
             }
 
-        setTimeout(function() {
-    
-            
-    
-            const post: Post = data.filter(post => post.id === id).pop();
-            const result = {...post};
+            setTimeout(function() {
+        
+                const post: Post = {...data.filter(post => post.id === id).pop()};
 
-            if(!result) {
-                reject(new ErrorModule.ResourceNotFoundError());
-            }
-    
-            resolve(result);
-            
-        }, 250);
-    })
+                if(!post) {
+                    reject(new ResourceNotFoundError());
+                    return;
+                }
 
-}
+                resolve(post);
+                
+            }, 250);
+
+        });
+    }
 
     save(newPost: Post): Promise<Post> {
         return new Promise<Post>((resolve, reject) => {
-            reject( new NotImplementedError());
-        })
+            reject(new NotImplementedError());
+        });
+    }
+
+    update(updatedPost: Post): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            reject(new NotImplementedError());
+        });
     }
 
     deleteById(id: number): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            reject( new NotImplementedError());
-        })
+            reject(new NotImplementedError());
+        });
     }
 
+    getPostsByPosterId(pid: number): Promise<Post[]> {
+        return new Promise<Post[]>((resolve, reject) => {
 
+            if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) {
+                reject(new BadRequestError());
+                return;
+            }
+
+            setTimeout(function() {
+                const posts = data.filter(post => post.posterId == pid);
+                resolve(posts);
+            }, 250);
+
+        });
+    }
 }
-
-// const data = require('../data/post-db');
-
-// const getPostById = function(id, cb) {
-    
-//     setTimeout(function() {
-
-//         if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
-//             cb(new errorModule.BadRequestError(), null);
-//             return;
-//         }
-
-//         const post = data.filter(post => post.id === id).pop();
-
-//         callback(null, post);
-        
-//     }, 250);
-// }
-
-// const getPostsByPosterId = function(posterId, callback) {
-//     setTimeout(function() {
-//         const posts = data.filter(post => post.poster == posterId);
-//         callback(posts);
-//     }, 250);
-// }
-
-// module.exports = {
-//     getPostById,
-//     getPostsByPosterId
-// };
