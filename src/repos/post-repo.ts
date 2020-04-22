@@ -88,31 +88,21 @@ export class PostRepository implements CrudRepository<Post> {
 
     }
 
-    getPostsByPosterId(posterId: number): Promise<Post> {
+    getPostsByPosterId(pid: number): Promise<Post[]> {
     
-        return new Promise<Post>((resolve,reject) => {
+        return new Promise<Post[]>((resolve,reject) => {
 
-            if (typeof posterId !== 'number' || !Number.isInteger(posterId) || posterId <= 0) {
+            if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) {
                 reject(new BadRequestError());
                 return;
             }
 
             setTimeout(() => {
 
-                let posts: Post[] = [];
-                
-                for (let post of data){
-
-                    posts.push({...post});
-
-                }
-
-                if(posts.length === 0){
-                    reject(new ResourceNotFoundError());
-                    return;
-                }
+                const posts = data.filter(post => post.posterId == pid);
 
                 resolve(posts);
+                
 
             }, 1000);
 
