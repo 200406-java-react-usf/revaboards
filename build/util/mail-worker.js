@@ -18,5 +18,9 @@ class MailWorker extends events_1.EventEmitter {
         super.on(event, listener);
         return this;
     }
+    emit(event, ...args) {
+        super.emit(event, args);
+        return true;
+    }
 }
 exports.MailWorker = MailWorker;

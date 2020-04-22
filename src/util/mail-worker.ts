@@ -21,8 +21,13 @@ export class MailWorker extends EventEmitter {
         return MailWorker.instance;
     }
 
-    on(event, listener) {
+    on(event: string, listener) {
         super.on(event, listener);
         return this;
+    }
+
+    emit(event: string, ...args) {
+        super.emit(event, args);
+        return true;
     }
 }
