@@ -10,6 +10,8 @@ import {
 
 export class PostRepository implements CrudRepository<Post> {
 
+    private static instance: PostRepository;
+
     getAll(): Promise<Post[]> {
 
         return new Promise((resolve, reject)  => {
@@ -92,5 +94,17 @@ export class PostRepository implements CrudRepository<Post> {
             }, 250);
 
         });
+    }
+
+    private constructor(){
+
+    }
+
+    public static getInstance(): PostRepository {
+        if(!PostRepository.instance){
+            PostRepository.instance = new PostRepository();
+        }
+
+        return PostRepository.instance;
     }
 }
