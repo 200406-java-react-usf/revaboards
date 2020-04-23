@@ -244,7 +244,7 @@ describe('userRepo', () => {
     // });
 
     // Neftaly       
-    test('should throw error when updateUser is given trying to update user', async () => {
+    test('should throw error when updateUser is trying to update username', async () => {
 
         let updatedUser = new User(1, 'bbailey', 'updated', 'updated', 'updated', 'updated@revature.com', new Date('01/01/2000'));
 
@@ -255,7 +255,6 @@ describe('userRepo', () => {
             expect(e instanceof ResourcePersistenceError).toBeTruthy();
         }
         });
-    
     
     // Juan
     // test('should invoke error callback when updateUser is given an updated user with a conflicting email', done => {
