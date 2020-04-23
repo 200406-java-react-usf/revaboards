@@ -210,7 +210,7 @@ describe('userRepo', () => {
     // });
 
     // Kaneisha
-    test('should invoke error callback when when addNewUser is given a falsy user', async () => {
+    test('should throw BadRequestError when save is given a falsy user', async () => {
         expect.assertions(1);
         
         try {
