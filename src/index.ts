@@ -1,7 +1,11 @@
+import { UserRepository }from './repos/user-repo';
 import { PostRepository } from './repos/post-repo';
 
-let postRepo = new PostRepository();
+(async function() {
+    let postRepo = PostRepository.getInstance();
+    let userRepo = UserRepository.getInstance();
 
-let postPromise = postRepo.getAll();
+    console.log(await postRepo.getAll());
 
-postPromise.then(console.log).catch(console.log);
+    console.log(await userRepo.getAll());
+})();

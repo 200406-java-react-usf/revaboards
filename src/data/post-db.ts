@@ -1,6 +1,4 @@
 import { Post } from '../models/post';
-
-// challenge: replace this with id generator function
 let id = 1;
 
 export default [
