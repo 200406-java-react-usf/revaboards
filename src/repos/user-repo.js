@@ -14,7 +14,7 @@ module.exports = (function() {
                 
                 let users = [];
     
-                for (user of data) {
+                for (let user of data) {
                     users.push({...user});
                 }
         
@@ -31,7 +31,7 @@ module.exports = (function() {
                 cb(null, users);
         
             }, 250);
-        }
+        };
     
         const getUserById = (id, cb) => {
     
@@ -53,7 +53,7 @@ module.exports = (function() {
         
             }, 250);
         
-        }
+        };
         
         const getUserByUsername = (un, cb) => {
         
@@ -75,7 +75,7 @@ module.exports = (function() {
         
             }, 250);
         
-        }
+        };
         
         const getUserByCredentials = (un, pw, cb) => {
         
@@ -97,7 +97,7 @@ module.exports = (function() {
         
             }, 250);
         
-        }
+        };
         
         const addNewUser = (newUser, cb) => {
             
@@ -108,7 +108,7 @@ module.exports = (function() {
         
             let invalid = !Object.keys(newUser).every(key => {
                 if(key == 'id') return true;
-                return newUser[key]
+                return newUser[key];
             });
         
             if (invalid) {
@@ -141,7 +141,7 @@ module.exports = (function() {
         
             });
         
-        }
+        };
         
         const updateUser = (updatedUser, cb) => {
         
@@ -167,7 +167,7 @@ module.exports = (function() {
                 let persistedUser = data.find(user => user.id === updatedUser.id);
         
                 if (!persistedUser) {
-                    cb(new errors.ResourceNotFoundError('No user found with provided id.'))
+                    cb(new errors.ResourceNotFoundError('No user found with provided id.'));
                 }
                 
                 if (persistedUser.username != updatedUser.username) {
@@ -190,7 +190,7 @@ module.exports = (function() {
         
             });
         
-        }
+        };
     
         return {
             getAllUsers,
@@ -199,7 +199,7 @@ module.exports = (function() {
             getUserByCredentials,
             addNewUser,
             updateUser
-        }
+        };
 
     }
 
@@ -207,6 +207,6 @@ module.exports = (function() {
         getInstance: function() {
             return !instance ? instance = init() : instance;
         }
-    }
+    };
 
 })();
