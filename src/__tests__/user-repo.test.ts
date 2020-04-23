@@ -63,14 +63,12 @@ describe('userRepo', () => {
         }
     });
 
-    // test('should return correct user when getUserByCredentials is given valid credentials', done => {
-    //     let result = sut.getInstance().getUserByCredentials('aanderson', 'password');
-    //         expect(result).toBeTruthy();
-    //         expect(result.username).toEqual('aanderson');
-    //         expect(result.password).toEqual('password');
-    //         done();
-    //     });
-    // });
+    test('should return correct user when getUserByCredentials is given valid credentials', async () => {
+        let result = await sut.getInstance().getUserByCredentials('aanderson', 'password');
+        expect(result).toBeTruthy();
+        expect(result.username).toEqual('aanderson');
+        expect(result.password).toBeUndefined();
+    });
 
     // test('should invoke error callback when getUserByCredentials is given invalid credentials', done => {
     //     expect.assertions(2);
