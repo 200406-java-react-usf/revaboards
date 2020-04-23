@@ -82,7 +82,7 @@ export class UserRepository implements CrudRepository<User> {
         
                 const user = {...data.filter(user => user.username === un).pop()};
                 
-                if (Object.keys(user).length == 0) {
+                if (!user) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
@@ -104,7 +104,7 @@ export class UserRepository implements CrudRepository<User> {
         
             setTimeout(() => {
         
-                const user = data.filter(user => user.username === un && user.password === pw).pop();
+                const user = {...data.filter(user => user.username === un && user.password === pw)[0]};
                 
                 if (!user) {
                     reject(new AuthenticationError('Bad credentials provided.'));
