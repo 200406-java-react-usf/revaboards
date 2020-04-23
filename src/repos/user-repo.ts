@@ -1,3 +1,4 @@
+
 import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
@@ -11,59 +12,121 @@ import {
     NotImplementedError
 } from '../errors/errors';
 
-
 export class UserRepository implements CrudRepository<User> {
 
     private static instance: UserRepository;
+
     private constructor() {}
+
     static getInstance() {
         return !UserRepository.instance ? UserRepository.instance = new UserRepository() : UserRepository.instance;
     }
 
-    getAll(): Promise<User[]>{
+    getAll(): Promise<User[]> {
 
-        return new Promise((resolve, reject) => {
+        return new Promise<User[]>((resolve, reject) => {
+
             setTimeout(() => {
-                let users: User[] = [];
-
-                for(let user of data) {
+            
+                let users = [];
+    
+                for (let user of data) {
                     users.push({...user});
                 }
+        
+                if (users.length == 0) {
+                    reject(new ResourceNotFoundError());
+                    return;
+                }
+        
+                resolve(users.map(this.removePassword));
+        
+            }, 250);
 
-                if(users.length === 0) {
+        });
+    
+    }
+
+    getById(id: number): Promise<User> {
+        return new Promise<User>((resolve, reject) => {
+            
+            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+                reject(new BadRequestError());
+            }
+
+            setTimeout(() => {
+                
+                const user = {...data.find(user => user.id === id)};
+
+                if(Object.keys(user).length === 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
 
-                resolve(users.map(this.removePassword));
-            }, 1000);
+                resolve(this.removePassword(user));
+
+            }, 250);
+
         });
     }
 
-    getById(id: number): Promise<User>{
+    getUserByUsername(un: string): Promise<User> {
 
         return new Promise<User>((resolve, reject) => {
-            if(typeof id  !== 'number' || !Number.isInteger(id) || id <= 0) {
+
+            if (typeof un !== 'string' || !un) {
                 reject(new BadRequestError());
                 return;
             }
-            setTimeout( () => {
-
-                const myUser = {...data.filter(user => user.id === id)[0]};
-
-                if(!myUser) {
+           
+            setTimeout(() => {
+        
+                const user = {...data.filter(user => user.username === un)[0]};
+                
+                if (Object.keys(user).length == 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
+        
+                resolve(this.removePassword(user));
+        
+            }, 250);
 
-                resolve(this.removePassword(myUser));
-
-            }, 1000)
         });
+        
+    
     }
 
-    save(newUser: User): Promise<User>{
+    getUserByCredentials(un: string, pw: string) {
+        
         return new Promise<User>((resolve, reject) => {
+
+            if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
+                reject(new BadRequestError());
+                return;
+            }
+        
+            setTimeout(() => {
+        
+                const user = {...data.filter(user => user.username === un && user.password === pw).pop()!};
+                
+                if (Object.keys(user).length === 0) {
+                    reject(new AuthenticationError('Bad credentials provided.'));
+                    return;
+                }
+                
+                resolve(this.removePassword(user));
+        
+            }, 250);
+
+        });
+    
+    }
+
+    save(newUser: User): Promise<User> {
+            
+        return new Promise<User>((resolve, reject) => {
+
             if (!newUser) {
                 reject(new BadRequestError('Falsy user object provided.'));
                 return;

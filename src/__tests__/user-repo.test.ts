@@ -35,42 +35,42 @@ describe('userRepo', () => {
         }
     });
 
-    // test('should return correct user (without password) when getUserByUsername is given a known username', async () => {
-    //     expect.assertions(3);
-    //     let result = await sut.getInstance().getUserByUsername('aanderson');
-    //     expect(result).toBeTruthy();
-    //     expect(result.username).toBe('aanderson');
-    //     expect(result.password).toBeUndefined();
+    test('should return correct user (without password) when getUserByUsername is given a known username', async () => {
+        expect.assertions(3);
+        let result = await sut.getInstance().getUserByUsername('aanderson');
+        expect(result).toBeTruthy();
+        expect(result.username).toBe('aanderson');
+        expect(result.password).toBeUndefined();
     
-    // });
+    });
 
-    // test('should throw ResourceNotFoundError when getUserByUsername is given an unknown username', async () => {
-    //     expect.assertions(1);
-    //     try {
-    //         await sut.getInstance().getUserByUsername('nobody');
-    //     } catch (e) {
-    //         expect(e instanceof ResourceNotFoundError).toBeTruthy();
-    //     }
+    test('should throw ResourceNotFoundError when getUserByUsername is given an unknown username', async () => {
+        expect.assertions(1);
+        try {
+            await sut.getInstance().getUserByUsername('nobody');
+        } catch (e) {
+            expect(e instanceof ResourceNotFoundError).toBeTruthy();
+        }
         
-    // });
+    });
 
-    // test('should throw BadRequestError when getUserByUsername is given bad data', async () => {
-    //     expect.assertions(1);
-    //     try {
-    //         await sut.getInstance().getUserByUsername('');
-    //     } catch (e) {
-    //         expect(e instanceof BadRequestError).toBeTruthy();
-    //     }
-    // });
+    test('should throw BadRequestError when getUserByUsername is given bad data', async () => {
+        expect.assertions(1);
+        try {
+            await sut.getInstance().getUserByUsername('');
+        } catch (e) {
+            expect(e instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
-    // test('should return correct user (without password) when getUserByCredentials is given valid credentials', async () => {
-    //     expect.assertions(3);
-    //     let result = await sut.getInstance().getUserByCredentials('aanderson', 'password');
-    //     expect(result).toBeTruthy();
-    //     expect(result.username).toBe('aanderson');
-    //     expect(result.password).toBeUndefined();
+    test('should return correct user (without password) when getUserByCredentials is given valid credentials', async () => {
+        expect.assertions(3);
+        let result = await sut.getInstance().getUserByCredentials('aanderson', 'password');
+        expect(result).toBeTruthy();
+        expect(result.username).toBe('aanderson');
+        expect(result.password).toBeUndefined();
         
-    // });
+    });
 
     // Damola
     // test('should invoke error callback when getUserByCredentials is given invalid credentials', done => {
