@@ -9,17 +9,17 @@ export class User {
     dob: string;
 
     constructor(id: number, un: string, pw: string, fn: string, ln: string, email: string, dob: string) {
-        this.id = id
-        this.username = un;
-        this.password = pw;
-        this.firstName = fn;
-        this.lastName = ln;
-        this.email = email;
-        this.dob = dob;
+    	this.id = id;
+    	this.username = un;
+    	this.password = pw;
+    	this.firstName = fn;
+    	this.lastName = ln;
+    	this.email = email;
+    	this.dob = dob;
     }
 
-    // age() {
-    //     return Math.abs(new Date(Date.now() - this.dob.getTime()) - 1970);
-    // }
+	// age() {
+	//     return Math.abs(new Date(Date.now() - this.dob.getTime()) - 1970);
+	// }
 
 } 

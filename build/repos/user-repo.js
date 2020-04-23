@@ -10,149 +10,157 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var data = require('../data/user-db');
-var errors = require('../errors/errors');
-module.exports = (function () {
-    var instance;
-    function init() {
-        var getAllUsers = function (cb) {
-            setTimeout(function () {
-                var users = [];
-                for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-                    user = data_1[_i];
-                    users.push(__assign({}, user));
-                }
-                if (users.length == 0) {
-                    cb(new errors.ResourceNotFoundError());
-                    return;
-                }
-                users = users.map(function (user) {
-                    delete user.password;
-                    return user;
-                });
-                cb(null, users);
-            }, 250);
-        };
-        var getUserById = function (id, cb) {
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var user_db_1 = __importDefault(require("../data/user-db"));
+var errors_1 = require("../errors/errors");
+var UserRepository = /** @class */ (function () {
+    function UserRepository() {
+    }
+    UserRepository.prototype.getAll = function () {
+        return new Promise(function (resolve, reject) {
+            var user = [];
+            for (var _i = 0, data_1 = user_db_1.default; _i < data_1.length; _i++) {
+                var users = data_1[_i];
+                user.push(__assign({}, users));
+            }
+            if (user.length == 0) {
+                reject(new errors_1.ResourceNotFoundError());
+                return;
+            }
+            resolve(user);
+        });
+    };
+    UserRepository.prototype.getById = function (id) {
+        return new Promise(function (resolve, reject) {
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
-                cb(new errors.BadRequestError());
+                reject(new errors_1.BadRequestError());
                 return;
             }
             setTimeout(function () {
-                var user = __assign({}, data.filter(function (user) { return user.id === id; }).pop());
+                var user = __assign({}, user_db_1.default.filter(function (user) { return user.id === id; }).pop());
                 if (!user) {
-                    cb(new errors.ResourceNotFoundError());
+                    reject(new errors_1.BadRequestError());
                     return;
                 }
-                cb(null, user);
-            }, 250);
-        };
-        var getUserByUsername = function (un, cb) {
+                resolve(user);
+            }, 1000);
+        });
+    };
+    UserRepository.prototype.getUserByUsername = function (un) {
+        return new Promise(function (resolve, reject) {
             if (typeof un !== 'string' || !un) {
-                cb(new errors.BadRequestError());
+                reject(new errors_1.BadRequestError());
                 return;
             }
             setTimeout(function () {
-                var user = __assign({}, data.filter(function (user) { return user.username === un; }).pop());
+                var user = __assign({}, user_db_1.default.filter(function (user) { return user.username === un; }).pop());
                 if (Object.keys(user).length == 0) {
-                    cb(new errors.ResourceNotFoundError());
+                    reject(new errors_1.ResourceNotFoundError());
                     return;
                 }
-                cb(null, user);
+                resolve(user);
             }, 250);
-        };
-        var getUserByCredentials = function (un, pw, cb) {
+        });
+    };
+    UserRepository.prototype.getUserByCredentials = function (un, pw) {
+        return new Promise(function (resolve, reject) {
             if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
-                cb(new errors.BadRequestError());
+                reject(new errors_1.BadRequestError());
                 return;
             }
             setTimeout(function () {
-                var user = data.filter(function (user) { return user.username === un && user.password === pw; }).pop();
+                var user = user_db_1.default.filter(function (user) { return user.username === un && user.password === pw; }).pop();
                 if (!user) {
-                    cb(new errors.AuthenticationError('Bad credentials provided.'));
+                    reject(new errors_1.AuthenticationError());
                     return;
                 }
-                cb(null, user);
+                resolve(user);
             }, 250);
-        };
-        var addNewUser = function (newUser, cb) {
+        });
+    };
+    UserRepository.prototype.save = function (newUser) {
+        return new Promise(function (resolve, reject) {
             if (!newUser) {
-                cb(new errors.BadRequestError('Falsy user object provided.'));
+                reject(new errors_1.BadRequestError());
                 return;
             }
             var invalid = !Object.keys(newUser).every(function (key) {
                 if (key == 'id')
                     return true;
-                return newUser[key];
+                // let index: number = +key;
+                // return newUser[index]
+                key;
             });
             if (invalid) {
-                cb(new errors.BadRequestError('Invalid property values found in provided user.'));
+                reject(new errors_1.BadRequestError());
                 return;
             }
             setTimeout(function () {
-                var conflict = data.filter(function (user) { return user.username == newUser.username; }).pop();
+                var conflict = user_db_1.default.filter(function (user) { return user.username == newUser.username; }).pop();
                 if (conflict) {
-                    cb(new errors.ResourcePersistenceError('The provided username is already taken.'));
+                    reject(new errors_1.ResourcePersistenceError());
                     return;
                 }
-                conflict = data.filter(function (user) { return user.email == newUser.email; }).pop();
+                conflict = user_db_1.default.filter(function (user) { return user.email == newUser.email; }).pop();
                 if (conflict) {
-                    cb(new errors.ResourcePersistenceError('The provided email is already taken.'));
+                    reject(new errors_1.ResourcePersistenceError());
                     return;
                 }
-                newUser.id = (data.length) + 1;
-                data.push(newUser);
-                cb(null, newUser);
+                newUser.id = (user_db_1.default.length) + 1;
+                user_db_1.default.push(newUser);
+                resolve(newUser);
             });
-        };
-        var updateUser = function (updatedUser, cb) {
+        });
+    };
+    UserRepository.prototype.update = function (updatedUser) {
+        return new Promise(function (resolve, reject) {
             if (!updatedUser) {
-                cb(new errors.BadRequestError('Falsy user object provided.'));
+                reject(new errors_1.BadRequestError());
                 return;
             }
             if (!updatedUser.id) {
-                cb(new errors.BadRequestError('An id must be provided for update operations.'));
+                reject(new errors_1.BadRequestError());
                 return;
             }
-            var invalid = !Object.keys(updatedUser).every(function (key) { return updatedUser[key]; });
+            var invalid = !Object.keys(updatedUser).every(function (key) { return key; } /*updatedUser[key]*/);
             if (invalid) {
-                cb(new errors.BadRequestError('Invalid property values found in provided user.'));
+                reject(new errors_1.BadRequestError());
                 return;
             }
             setTimeout(function () {
-                var persistedUser = data.find(function (user) { return user.id === updatedUser.id; });
+                var persistedUser = user_db_1.default.find(function (user) { return user.id === updatedUser.id; });
                 if (!persistedUser) {
-                    cb(new errors.ResourceNotFoundError('No user found with provided id.'));
-                }
-                if (persistedUser.username != updatedUser.username) {
-                    cb(new errors.ResourcePersistenceError('Usernames cannot be updated.'));
+                    reject(new errors_1.ResourceNotFoundError());
                     return;
                 }
-                var conflict = data.filter(function (user) {
+                if (persistedUser.username != updatedUser.username) {
+                    reject(new errors_1.ResourcePersistenceError());
+                    return;
+                }
+                var conflict = user_db_1.default.filter(function (user) {
                     if (user.id == updatedUser.id)
                         return false;
                     return user.email == updatedUser.email;
                 }).pop();
                 if (conflict) {
-                    cb(new errors.ResourcePersistenceError('Provided email is taken by another user.'));
+                    reject(new errors_1.ResourcePersistenceError());
                     return;
                 }
                 persistedUser = updatedUser;
-                cb(null, true);
-            });
-        };
-        return {
-            getAllUsers: getAllUsers,
-            getUserById: getUserById,
-            getUserByUsername: getUserByUsername,
-            getUserByCredentials: getUserByCredentials,
-            addNewUser: addNewUser,
-            updateUser: updateUser
-        };
-    }
-    return {
-        getInstance: function () {
-            return !instance ? instance = init() : instance;
-        }
+                resolve(true);
+            }, 1000);
+        });
     };
-})();
+    UserRepository.prototype.deleteById = function (id) {
+        return new Promise(function (resolve, reject) {
+            return new Promise(function (resolve, reject) {
+                reject(new errors_1.NotImplementedError());
+            });
+        });
+    };
+    return UserRepository;
+}());
+exports.UserRepository = UserRepository;

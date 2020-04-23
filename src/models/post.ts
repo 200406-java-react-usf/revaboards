@@ -6,10 +6,10 @@ export class Post {
     posterId: number;
 
     constructor (id: number, title: string, body: string, pid: number) {
-        this.id = id;
-        this.title = title;
-        this.body = body;
-        this.posterId = pid;
+    	this.id = id;
+    	this.title = title;
+    	this.body = body;
+    	this.posterId = pid;
     }
     
 }

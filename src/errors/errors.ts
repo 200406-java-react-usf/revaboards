@@ -5,66 +5,66 @@ class ApplicationError {
 
     constructor(rsn?: string) {
 
-        this.message = 'An Unexpected Error occured';
-        rsn ? (this.reason = rsn) : this.reason = 'Unspecified reason.';
+    	this.message = 'An Unexpected Error occured';
+    	rsn ? (this.reason = rsn) : this.reason = 'Unspecified reason.';
 
     }
 
     setMessage(message: string){
-        this.message = message;
+    	this.message = message;
     }
 
 }
 
 class ResourcePersistenceError extends ApplicationError {
 
-    constructor (reason?: string) {
-        super(); //invokes Application Error's constructor
-        super.setMessage('Resource not persisted'); 
-    }
+	constructor (reason?: string) {
+		super(); //invokes Application Error's constructor
+		super.setMessage('Resource not persisted'); 
+	}
     
 }
 
 class ResourceNotFoundError extends ApplicationError {
 
-    constructor (reason?: string) {
-        super(); //invokes Application Error's constructor
-        super.setMessage('No resource Found'); 
-    }
+	constructor (reason?: string) {
+		super(); //invokes Application Error's constructor
+		super.setMessage('No resource Found'); 
+	}
     
 }
 
 class BadRequestError extends ApplicationError {
 
-    constructor (reason?: string) {
-        super(); //invokes Application Error's constructor
-        super.setMessage('Invalid Params'); 
-    }
+	constructor (reason?: string) {
+		super(); //invokes Application Error's constructor
+		super.setMessage('Invalid Params'); 
+	}
     
 }
 
 class AuthenticationError extends ApplicationError {
 
-    constructor (reason?: string) {
-        super(); //invokes Application Error's constructor
-        super.setMessage('Authentication failed'); 
-    }
+	constructor (reason?: string) {
+		super(); //invokes Application Error's constructor
+		super.setMessage('Authentication failed'); 
+	}
     
 }
 
 class NotImplementedError extends ApplicationError {
 
-    constructor (reason?: string) {
-        super(); //invokes Application Error's constructor
-        super.setMessage('No implementation yet!'); 
-    }
+	constructor (reason?: string) {
+		super(); //invokes Application Error's constructor
+		super.setMessage('No implementation yet!'); 
+	}
     
 }
 
 export {
-    ResourceNotFoundError,
-    ResourcePersistenceError,
-    BadRequestError,
-    AuthenticationError,
-    NotImplementedError
-}
+	ResourceNotFoundError,
+	ResourcePersistenceError,
+	BadRequestError,
+	AuthenticationError,
+	NotImplementedError
+};
