@@ -55,9 +55,10 @@ export class UserRepository implements CrudRepository<User> {
         
             setTimeout(() => {
         
-                const user = {...data.filter(user => user.id === id).pop()};
+                const user = {...data.filter(user => user.id === id)[0]};
                 
-                if (!user) {
+                console.log(user);
+                if (Object.keys(user).length === 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
@@ -80,9 +81,9 @@ export class UserRepository implements CrudRepository<User> {
         
             setTimeout(() => {
         
-                const user = {...data.filter(user => user.username === un).pop()};
+                const user = {...data.filter(user => user.username === un)[0]};
                 
-                if (!user) {
+                if (Object.keys(user).length === 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
@@ -106,7 +107,7 @@ export class UserRepository implements CrudRepository<User> {
         
                 const user = {...data.filter(user => user.username === un && user.password === pw)[0]};
                 
-                if (!user) {
+                if (Object.keys(user).length === 0) {
                     reject(new AuthenticationError('Bad credentials provided.'));
                     return;
                 }
@@ -140,14 +141,14 @@ export class UserRepository implements CrudRepository<User> {
         
             setTimeout(() => {
         
-                let conflict = data.filter(user => user.username == newUsr.username).pop();
+                let conflict = data.filter(user => user.username == newUsr.username)[0];
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('The provided username is already taken.'));
                     return;
                 }
         
-                conflict = data.filter(user => user.email == newUsr.email).pop();
+                conflict = data.filter(user => user.email == newUsr.email)[0];
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('The provided email is already taken.'));

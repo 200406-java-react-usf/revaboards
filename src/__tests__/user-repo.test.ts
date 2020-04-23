@@ -25,6 +25,7 @@ describe('userRepo', () => {
     });
 
     test('should throw BadRequestError when getById is given an invalid id', async () => {
+        expect.assertions(1);
         try {
             await sut.getInstance().getById(-1);
         } catch (e) {
@@ -32,7 +33,8 @@ describe('userRepo', () => {
         }
     });
 
-    test('should throw ResourceNotFound error getById is given an unknown id', async () => {
+    test('should throw ResourceNotFoundError getById is given an unknown id', async () => {
+        expect.assertions(1);
         try {
             await sut.getInstance().getById(99999);
         } catch (e) {
@@ -48,14 +50,16 @@ describe('userRepo', () => {
     });
 
     test('should throw ResourceNotFoundError when getUserByUsername is given an unknown username', async () => {
+        expect.assertions(1);
         try {
-            sut.getInstance().getUserByUsername('nobody');
+            await sut.getInstance().getUserByUsername('nobody');
         } catch (e) {
             expect(e instanceof ResourceNotFoundError).toBeTruthy();
         }
     });
 
     test('should throw BadRequestError when getUserByUsername is given bad data', async () => {
+        expect.assertions(1);
         try {
             await sut.getInstance().getUserByUsername('');
         } catch (e) {
