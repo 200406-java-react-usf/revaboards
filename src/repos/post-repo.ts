@@ -28,7 +28,6 @@ export class PostRepository implements CrudRepository<Post> {
                 }
 
                 resolve(posts);
-
                 
             }, 1000);
 
@@ -46,7 +45,7 @@ export class PostRepository implements CrudRepository<Post> {
 
             setTimeout(function() {
         
-                const post: Post = {...data.filter(post => post.id === id).pop()};
+                const post: Post = {...data.filter(post => post.id === id)[0]};
 
                 if(!post) {
                     reject(new ResourceNotFoundError());

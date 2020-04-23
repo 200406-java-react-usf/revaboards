@@ -1,81 +1,135 @@
-const data = require('../data/user-db');
-const errors = require('../errors/errors');
-const mailWorker = require('../util/mail-worker');
+import data from '../data/user-db';
+import {CrudRepository } from './crud-repo';
+import { User } from '../models/user';
+import { 
+    BadRequestError, 
+    ResourceNotFoundError,
+    ResourcePersistenceError,
+    NotImplementedError
+} from '../errors/errors';
 
-module.exports = (function() {
 
-    let instance;
+export class UserRepository implements CrudRepository<User> {
 
-    function init() {
+    private static instance: UserRepository;
 
-        const getAllUsers = (cb) => {
+    private constructor() {}
+
+    static getInstance() {
+        return !UserRepository.instance ? UserRepository.instance = new UserRepository() : UserRepository.instance
+    }
+
+    getAll(): Promise<User[]> {
+        return new Promise((resolve, reject) => {
 
             setTimeout(() => {
                 
-                let users = [];
-    
-                for (user of data) {
+                let users: User[] = [];
+
+                for(let user of data) {
                     users.push({...user});
                 }
         
-                if (users.length == 0) {
-                    cb(new errors.ResourceNotFoundError());
+                if (users.length === 0) {
+                    reject(new ResourceNotFoundError());
                     return;
                 }
-        
-                users = users.map(user => {
-                    delete user.password;
-                    return user;
-                });
-        
-                cb(null, users);
+                resolve(users.map(this.removePassword));
         
             }, 250);
-        }
+        });
+    };
+
+    private removePassword(user:User): User {
+        let usr = {...user};
+        delete usr.password;
+        return usr;
+    }
     
-        const getUserById = (id, cb) => {
-    
+    getById(id: number): Promise<User> {
+
+        return new Promise<User>((resolve, reject) => {
+
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
-                cb(new errors.BadRequestError());
+                reject(new BadRequestError());
                 return;
             }
-           
-            setTimeout(() => {
+            
+            setTimeout(function() {
         
-                const user = {...data.filter(user => user.id === id).pop()};
+                const user: User = {...data.filter(user => user.id === id)[0]};
                 
                 if (!user) {
-                    cb(new errors.ResourceNotFoundError());
+                    reject(new ResourceNotFoundError());
                     return;
                 }
-        
-                cb(null, user);
+
+                resolve(this.removePassword(user));
         
             }, 250);
-        
-        }
-        
-        const getUserByUsername = (un, cb) => {
-        
+        });
+    
+    }
+
+    save(newUser: User): Promise<User> {
+        return new Promise<User>((resolve, reject) => {
+            reject(new NotImplementedError());
+        });
+    }
+
+    update(updatedUser: User): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            reject(new NotImplementedError());
+        });
+    }
+
+    deleteById(id: number): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            reject(new NotImplementedError());
+        });
+    }
+
+    getUserByUsername(un: string): Promise<User> {
+        return new Promise<User>((resolve, reject) => {
+
             if (typeof un !== 'string' || !un) {
-                cb(new errors.BadRequestError());
+                reject(new BadRequestError());
                 return;
             }
-           
+            
+            setTimeout(function() {
+                const users = {...data.filter(user => user.username === un)[0]};
+                resolve(this.removePassword(user));
+            }, 250);
+        });
+    }
+
+    getUserByCredentials (un: string, pw: string) {
+
+        return new Promise<User>((resolve, reject) => {
+
+            if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
+                reject(new BadRequestError());
+                return;
+            }
+        
             setTimeout(() => {
         
-                const user = {...data.filter(user => user.username === un).pop()};
+                const user = data.filter(user => user.username === un && user.password === pw).pop();
                 
-                if (Object.keys(user).length == 0) {
-                    cb(new errors.ResourceNotFoundError());
+                if (!user) {
+                    reject(new AuthenticationError('Bad credentials provided.'));
                     return;
                 }
-        
-                cb(null, user);
+                
+                resolve(null, user);
         
             }, 250);
-        
-        }
+        })
+    }
+}
+
+/*
         
         const getUserByCredentials = (un, pw, cb) => {
         
@@ -210,3 +264,4 @@ module.exports = (function() {
     }
 
 })();
+*/
