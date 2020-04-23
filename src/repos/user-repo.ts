@@ -73,13 +73,38 @@ module.exports = (function() {
             }, 250);
         };
     
-        const getUserById = (id) => { //used thunks to return the result
-            let fn; //declared fn
-            let user; //declared user
+    }
+
+    getById(id: number): Promise<User> {
+        return new Promise<User>((resolve, reject) => {
+            
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
-                return function (cb){
-                    cb(new errors.BadRequestError());
-                };
+                reject(new BadRequestError());
+            }
+
+            setTimeout(() => {
+                
+                const user = {...data.find(user => user.id === id)};
+
+                if(Object.keys(user).length === 0) {
+                    reject(new ResourceNotFoundError());
+                    return;
+                }
+
+                resolve(this.removePassword(user));
+
+            }, 250);
+
+        });
+    }
+
+    getUserByUsername(un: string): Promise<User> {
+
+        return new Promise<User>((resolve, reject) => {
+
+            if (typeof un !== 'string' || !un) {
+                reject(new BadRequestError());
+                return;
             }
            
             setTimeout(() => {
