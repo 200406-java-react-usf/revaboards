@@ -354,7 +354,7 @@ describe('userRepo', () => {
     test('should throw BadRequestError when updateUser is given an falsy user', async() => {
         expect.assertions(1);
         try {
-            await sut.getInstance().save(null)
+            await sut.getInstance().update(null)
         } catch (e) {
             expect(e instanceof BadRequestError).toBeTruthy();
         }
