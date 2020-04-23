@@ -7,6 +7,7 @@ export class User {
     lastName: string;
     email: string;
     dob: Date;
+    age: number;
 
     constructor(id:number, un:string, pw:string, fn:string, ln:string, email:string, dob:Date) {
         this.id = id;
@@ -16,6 +17,12 @@ export class User {
         this.lastName = ln;
         this.email = email;
         this.dob = dob;
+        this.age = this.determineAge();
+    }
+
+    private determineAge = () => {
+        let diffMs = Date.now() - this.dob.getTime();
+        return Math.abs(new Date(diffMs).getUTCFullYear() - 1970);    
     }
 
 }
