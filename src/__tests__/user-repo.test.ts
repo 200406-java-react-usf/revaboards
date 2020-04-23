@@ -1,6 +1,10 @@
 import { UserRepository as sut } from '../repos/user-repo';
 import { User } from '../models/user';
-import { BadRequestError, AuthenticationError, ResourceNotFoundError, ResourcePersistenceError } from '../errors/errors';
+import { BadRequestError,
+     AuthenticationError, 
+     ResourceNotFoundError, 
+     ResourcePersistenceError } 
+     from '../errors/errors';
 
 describe('userRepo', () => {
 

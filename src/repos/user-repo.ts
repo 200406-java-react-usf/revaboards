@@ -3,7 +3,6 @@ import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
 import mailWorker from'../util/mail-worker';
-
 import { 
     ResourceNotFoundError, 
     BadRequestError, 
