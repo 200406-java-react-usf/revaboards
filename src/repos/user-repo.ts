@@ -37,7 +37,7 @@ export class UserRepository implements CrudRepository<User>{
 
             setTimeout(() =>{
 
-                const user: User = {...data.filter( user => user.id === id).pop()};
+                const user: User = {...data.filter( user => user.id === id).pop() as User};
 
                 if (!user){
                     reject(new BadRequestError());
@@ -64,7 +64,7 @@ export class UserRepository implements CrudRepository<User>{
 
             setTimeout(() => {
     
-                const user = {...data.filter(user => user.username === un).pop()};
+                const user = {...data.filter(user => user.username === un).pop() as User};
                 
                 if (Object.keys(user).length == 0) {
                     reject(new ResourceNotFoundError());
