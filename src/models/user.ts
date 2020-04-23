@@ -17,12 +17,7 @@ export class User {
         this.lastName = ln;
         this.email = email;
         this.dob = dob;
-        this.age = this.determineAge();
-    }
-
-    private determineAge = () => {
-        let diffMs = Date.now() - this.dob.getTime();
-        return Math.abs(new Date(diffMs).getUTCFullYear() - 1970);    
+        this.age = Math.abs(new Date(Date.now() - this.dob.getTime()).getUTCFullYear() - 1970);
     }
 
 }
