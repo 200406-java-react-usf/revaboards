@@ -65,4 +65,4 @@ export {
     BadRequestError,
     AuthenticationError,
     NotImplementedError
-}
+};

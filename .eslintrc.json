@@ -22,11 +22,19 @@
     "rules": {
         "indent": [
             "error",
+<<<<<<< HEAD
             "tab"
         ],
         "linebreak-style": [
             "error",
             "windows"
+=======
+            4
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+>>>>>>> 8153c2805155dccefcc0668532ec580f9e013978
         ],
         "quotes": [
             "error",
