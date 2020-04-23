@@ -1,57 +1,32 @@
-import { CrudRepository } from "./crud-repo";
 import data from '../data/user-db';
-import { User } from '../models/user'
-import { ResourceNotFoundError } from '../errors/errors'
-const mailWorker = require('../util/mail-worker');
+import { User } from '../models/user';
+import { CrudRepository } from './crud-repo';
+import mailWorker from'../util/mail-worker';
+
+import { 
+    ResourceNotFoundError, 
+    BadRequestError, 
+    AuthenticationError,
+    ResourcePersistenceError,
+    NotImplementedError
+} from '../errors/errors';
 
 export class UserRepository implements CrudRepository<User> {
 
-    private static instace: UserRepository;
-    private constructor() { }
+    private static instance: UserRepository;
+
+    private constructor() {}
+
+    static getInstance() {
+        return !UserRepository.instance ? UserRepository.instance = new UserRepository() : UserRepository.instance;
+    }
 
     getAll(): Promise<User[]> {
 
         return new Promise<User[]>((resolve, reject) => {
+
             setTimeout(() => {
             
-            let users = [];
-
-            for (let user of data) {
-                users.push({...user});
-            }
-    
-            if (users.length == 0) {
-                reject(new ResourceNotFoundError());
-                return;
-            }
-    
-            users = users.map(user => {
-                delete user.password;
-                return user;
-            });
-    
-            resolve(users.map(this.removePassword));
-    
-        }, 250);
-    }
-    };
-        
-        
-
-
-
-    static getInstance() {
-        return !UserRepository.instace ? UserRepository.instace = new UserRepository() : UserRepository.instace;
-    }
-}
-
-module.exports = (function() {
-
-
-        const getAllUsers = (cb) => {
-
-            setTimeout(() => {
-                
                 let users = [];
     
                 for (let user of data) {
@@ -59,19 +34,15 @@ module.exports = (function() {
                 }
         
                 if (users.length == 0) {
-                    cb(new errors.ResourceNotFoundError());
+                    reject(new ResourceNotFoundError());
                     return;
                 }
         
-                users = users.map(user => {
-                    delete user.password;
-                    return user;
-                });
-        
-                cb(null, users);
+                resolve(users.map(this.removePassword));
         
             }, 250);
-        };
+
+        });
     
     }
 
@@ -109,90 +80,54 @@ module.exports = (function() {
            
             setTimeout(() => {
         
-                user = {...data.filter(user => user.id === id).pop()}; //retrieves the user by the id
+                const user = {...data.filter(user => user.username === un)[0]};
                 
-                if (JSON.stringify(user) === '{}') {  //check if it actually return a user
-                    fn(new errors.ResourceNotFoundError()); //since we are inside the setTimeout we set the fn = resource error
+                if (Object.keys(user).length == 0) {
+                    reject(new ResourceNotFoundError());
+                    return;
                 }
-                else if(fn){ //if the fn is empty then set it to our retrieved user
-                    fn(user); 
-                }
+        
+                resolve(this.removePassword(user));
+        
             }, 250);
-            return function(cb){ //we return a callback function
-                fn = cb; // if we havent gotten a result yet then we set fn = to our callback function
-                
-            };
-        
-        };
-        
-        const getUserByUsername = (un) => {
-        
-            // if (typeof un !== 'string' || !un) {
-            //     cb(new errors.BadRequestError());
-            //     return;
-            // }
-           
-            // setTimeout(() => {
-        
-            //     const user = {...data.filter(user => user.username === un).pop()};
-                
-            //     if (Object.keys(user).length == 0) {
-            //         cb(new errors.ResourceNotFoundError());
-            //         return;
-            //     }
-            //     cb(null, user);
-            // }, 250);
-            let bad = new errors.BadRequestError();
-            let resource = new errors.ResourceNotFoundError();
-            return new Promise((resolve, reject) => {
-                
-                if (typeof un !== 'string' || !un) {
-                    resolve(bad);
-                    //reject(bad);                    
-                }
 
-                setTimeout(() => {
-                    
-                    const user = {...data.filter(user => user.username === un).pop()};
-                    if (Object.keys(user).length == 0) {
-                        resolve(resource);
-                        //reject(resource);
-                    }
-                    else {
-                        resolve(user);
-                    }
-                    
-                });
-            });
+        });
         
-        };
+    
+    }
+
+    getUserByCredentials(un: string, pw: string) {
         
-        const getUserByCredentials = (un, pw, cb) => {
-        
+        return new Promise<User>((resolve, reject) => {
+
             if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
-                cb(new errors.BadRequestError());
+                reject(new BadRequestError());
                 return;
             }
         
             setTimeout(() => {
         
-                const user = data.filter(user => user.username === un && user.password === pw).pop();
+                const user = {...data.filter(user => user.username === un && user.password === pw).pop()!};
                 
-                if (!user) {
-                    cb(new errors.AuthenticationError('Bad credentials provided.'));
+                if (Object.keys(user).length === 0) {
+                    reject(new AuthenticationError('Bad credentials provided.'));
                     return;
                 }
                 
-                cb(null, user);
+                resolve(this.removePassword(user));
         
             }, 250);
-        
-        };
-        
-        const addNewUser = (newUser, cb) => {
+
+        });
+    
+    }
+
+    save(newUser: User): Promise<User> {
             
+        return new Promise<User>((resolve, reject) => {
+
             if (!newUser) {
-                cb(new errors.BadRequestError('Falsy user object provided.'));
+                reject(new BadRequestError('Falsy user object provided.'));
                 return;
             }
         
@@ -202,7 +137,7 @@ module.exports = (function() {
             });
         
             if (invalid) {
-                cb(new errors.BadRequestError('Invalid property values found in provided user.'));
+                reject(new BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
         
@@ -211,44 +146,48 @@ module.exports = (function() {
                 let conflict = data.filter(user => user.username == newUser.username).pop();
         
                 if (conflict) {
-                    cb(new errors.ResourcePersistenceError('The provided username is already taken.'));
+                    reject(new ResourcePersistenceError('The provided username is already taken.'));
                     return;
                 }
         
                 conflict = data.filter(user => user.email == newUser.email).pop();
         
                 if (conflict) {
-                    cb(new errors.ResourcePersistenceError('The provided email is already taken.'));
+                    reject(new ResourcePersistenceError('The provided email is already taken.'));
                     return;
                 }
         
                 newUser.id = (data.length) + 1;
                 data.push(newUser);
-
-                mailWorker.emit('newRegister', newUser.email);
+    
+                // mailWorker.emit('newRegister', newUser.email);
         
-                cb(null, newUser);
+                resolve(this.removePassword(newUser));
         
             });
+
+        });
+    
+    }
+
+    update(updatedUser: User): Promise<boolean> {
         
-        };
-        
-        const updateUser = (updatedUser, cb) => {
-        
+        return new Promise<boolean>((resolve, reject) => {
+
             if (!updatedUser) {
-                cb(new errors.BadRequestError('Falsy user object provided.'));
+                reject(new BadRequestError('Falsy user object provided.'));
                 return;
             }
         
             if (!updatedUser.id) {
-                cb(new errors.BadRequestError('An id must be provided for update operations.'));
+                reject(new BadRequestError('An id must be provided for update operations.'));
                 return;
             }
         
             let invalid = !Object.values(updatedUser).every(val => val);
         
             if (invalid) {
-                cb(new errors.BadRequestError('Invalid property values found in provided user.'));
+                reject(new BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
         
@@ -257,11 +196,11 @@ module.exports = (function() {
                 let persistedUser = data.find(user => user.id === updatedUser.id);
         
                 if (!persistedUser) {
-                    cb(new errors.ResourceNotFoundError('No user found with provided id.'));
+                    reject(new ResourceNotFoundError('No user found with provided id.'));
                 }
                 
                 if (persistedUser.username != updatedUser.username) {
-                    cb(new errors.ResourcePersistenceError('Usernames cannot be updated.'));
+                    reject(new ResourcePersistenceError('Usernames cannot be updated.'));
                     return;
                 }
         
@@ -271,17 +210,30 @@ module.exports = (function() {
                 }).pop();
         
                 if (conflict) {
-                    cb(new errors.ResourcePersistenceError('Provided email is taken by another user.'));
+                    reject(new ResourcePersistenceError('Provided email is taken by another user.'));
                     return;
                 }
     
                 persistedUser = updatedUser;
-                cb(null, true);
+    
+                resolve(true);
         
             });
-        
-        };
+
+        });
     
+    }
 
+    deleteById(id: number): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            reject(new NotImplementedError());
+        });
+    }
 
-})();
+    private removePassword(user: User): User {
+        let usr = {...user};
+        delete usr.password;
+        return usr;   
+    }
+
+}

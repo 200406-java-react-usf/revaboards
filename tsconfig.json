@@ -7,10 +7,6 @@
     "outDir": "./build",                      /* Redirect output structure to the directory. */
     "moduleResolution": "node",               /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
     "esModuleInterop": true,                  /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
-<<<<<<< HEAD
-
-=======
->>>>>>> 69097bd6edc11a188725a1bb29c9adb9d792a8c1
   },
   "include": [
     "./src/**/*", "src/__tests__/user-repo.test.ts"
