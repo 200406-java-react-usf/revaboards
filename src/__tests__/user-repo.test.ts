@@ -350,14 +350,25 @@ describe('userRepo', () => {
     //     });
     // });
 
-    // Louis
-    // test('should invoke error callback when updateUser is given an falsy user', done => {
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(null, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+    //Louis
+    test('should throw BadRequestError when updateUser is given an falsy user', async() => {
+        expect.assertions(1);
+        try {
+            await sut.getInstance().save(null)
+        } catch (e) {
+            expect(e instanceof BadRequestError).toBeTruthy();
+        }
+        });
+    });
 
-});
+
+// 
+//  test('should throw BadRequestError when getUserByUsername is given bad data', async () => {
+//     expect.assertions(1);
+//     try {
+//         await sut.getInstance().getUserByUsername('');
+//     } catch (e) {
+//         expect(e instanceof BadRequestError).toBeTruthy();
+//     }
+// });
+// 
