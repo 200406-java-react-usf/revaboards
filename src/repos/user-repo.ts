@@ -118,17 +118,19 @@ export class UserRepository implements CrudRepository<User> {
     }
     
     save(newUser: User): Promise<User> {
+
+        let newUsr = {...newUser};
         
         return new Promise((resolve, reject) => {
 
-            if (!newUser) {
+            if (!newUsr) {
                 reject(new BadRequestError('Falsy user object provided.'));
                 return;
             }
         
-            let invalid = !Object.keys(newUser).every(key => {
+            let invalid = !Object.keys(newUsr).every(key => {
                 if(key == 'id') return true;
-                return newUser[key];
+                return newUsr[key];
             });
         
             if (invalid) {
@@ -138,26 +140,26 @@ export class UserRepository implements CrudRepository<User> {
         
             setTimeout(() => {
         
-                let conflict = data.filter(user => user.username == newUser.username).pop();
+                let conflict = data.filter(user => user.username == newUsr.username).pop();
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('The provided username is already taken.'));
                     return;
                 }
         
-                conflict = data.filter(user => user.email == newUser.email).pop();
+                conflict = data.filter(user => user.email == newUsr.email).pop();
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('The provided email is already taken.'));
                     return;
                 }
         
-                newUser.id = (data.length) + 1;
-                data.push(newUser);
+                newUsr.id = (data.length) + 1;
+                data.push(newUsr);
 
-                MailWorker.getInstance().emit('newRegister', newUser.email);
+                MailWorker.getInstance().emit('newRegister', newUsr.email);
         
-                resolve(this.removePassword(newUser));
+                resolve(this.removePassword(newUsr));
         
             });
 
