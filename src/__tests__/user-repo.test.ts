@@ -1,6 +1,6 @@
 import { UserRepository as sut } from '../repos/user-repo';
 import { User } from '../models/user';
-import { BadRequestError, AuthenticationError, ResourceNotFoundError } from '../errors/errors';
+import { BadRequestError, AuthenticationError, ResourceNotFoundError, ResourcePersistenceError } from '../errors/errors';
 
 describe('userRepo', () => {
 
@@ -256,18 +256,19 @@ describe('userRepo', () => {
     //     });
     // });
     
-    // Juan
-    // test('should invoke error callback when updateUser is given an updated user with a conflicting email', done => {
+    //Juan
+    test('should invoke error callback when updateUser is given an updated user with a conflicting email', async () => {
 
-    //     let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', 'bbailey@revature.com', new Date());
-
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+        let updatedUser = new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'bbailey@revature.com', new Date('01/01/1995'));
+        expect.assertions(1);
+        try {
+            await sut.getInstance().update(updatedUser);
+        }
+        catch(e){
+            console.log(e);
+            expect(e instanceof ResourcePersistenceError).toBeTruthy();
+        }
+    });
 
 
     // Korey
