@@ -148,20 +148,16 @@ describe('userRepo', () => {
     //     });
 
     // });
-
     // Hao
-    // test('should invoke error callback when addNewUser is given an invalid new user (falsy password)', done => {
-        
-    //     let invalidMockUser = new User(0, 'a', '', 'a', 'a', 'a@revature.com', new Date());
-        
-    //     expect.assertions(2);
-    //     sut.getInstance().addNewUser(invalidMockUser, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-
-    // });
+    test('should invoke error callback when addNewUser is given an invalid new user (falsy password)', async () => {
+        let invalidMockUser = new User(0, 'a', '', 'a', 'a', 'a@revature.com', new Date());
+        expect.assertions(1);
+        try {
+            await sut.getInstance().save(invalidMockUser)
+        } catch (e) {
+            expect(e instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
     // John
     // test('should invoke error callback when addNewUser is given an invalid new user (falsy firstName)', done => {
