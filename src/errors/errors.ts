@@ -51,4 +51,4 @@ export {
     ResourcePersistenceError,
     BadRequestError,
     AuthenticationError
-}
+};

@@ -128,7 +128,7 @@ export class UserRepository implements CrudRepository<User> {
         
             let invalid = !Object.keys(newUser).every(key => {
                 if(key == 'id') return true;
-                return newUser[key]
+                return newUser[key];
             });
         
             if (invalid) {
@@ -192,7 +192,7 @@ export class UserRepository implements CrudRepository<User> {
                 let persistedUser = data.find(user => user.id === updatedUser.id);
         
                 if (!persistedUser) {
-                    reject(new ResourceNotFoundError('No user found with provided id.'))
+                    reject(new ResourceNotFoundError('No user found with provided id.'));
                 }
                 
                 if (persistedUser.username != updatedUser.username) {
@@ -222,7 +222,7 @@ export class UserRepository implements CrudRepository<User> {
     deleteById(id: number): Promise<boolean> {
         return new Promise((resolve, reject) => {
             reject('Not implemented');
-        })
+        });
     }
 
     private removePassword(user) {

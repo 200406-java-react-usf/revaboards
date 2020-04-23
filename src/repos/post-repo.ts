@@ -37,7 +37,7 @@ export class PostRepository implements CrudRepository<Post> {
 
                 resolve(posts);
 
-            })
+            });
         });
 
     }
@@ -112,7 +112,7 @@ export class PostRepository implements CrudRepository<Post> {
     deleteById(id: number): Promise<boolean> {
         return new Promise((resolve, reject) => {
             reject('Not implemented');
-        })
+        });
     }
 
 
