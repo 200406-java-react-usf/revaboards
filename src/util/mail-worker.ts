@@ -2,16 +2,16 @@ import { EventEmitter } from 'events';
 
 export class MailWorker extends EventEmitter {
 
-    private static instance: MailWorker;
+	private static instance: MailWorker;
 
-    server: string;
-    port: number;
+	server: string;
+	port: number;
 
-    private constructor() {
-    	super();
-    	this.server = 'fake-smtp-server.com';
-    	this.port = 25;
-    }
+	private constructor() {
+		super();
+		this.server = 'fake-smtp-server.com';
+		this.port = 25;
+	}
 
     static getInstance(): MailWorker {
     	if (!MailWorker.instance) {
