@@ -86,9 +86,9 @@ describe('userRepo', () => {
     test('should throw AuthenticationError when getUserByCredentials is given bad data', async () => {
         expect.assertions(1);
         try{
-            await sut.getInstance().getUserByCredentials('', '');
+            await sut.getInstance().getUserByCredentials('adfds', 'fdsafds');
         } catch (err) {
-            expect(err instanceof BadRequestError).toBeTruthy();
+            expect(err instanceof AuthenticationError).toBeTruthy();
         }
     });
 
