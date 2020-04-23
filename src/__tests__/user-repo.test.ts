@@ -88,7 +88,7 @@ describe('userRepo', () => {
         try{
             await sut.getInstance().getUserByCredentials('', '');
         } catch (err) {
-            expect(err instanceof AuthenticationError).toBeTruthy();
+            expect(err instanceof BadRequestError).toBeTruthy();
         }
     });
 
