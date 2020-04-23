@@ -1,5 +1,5 @@
-const sut = require('./user-repo');
-const User = require('../models/user');
+import{} from ('./user-repo') as sut;
+import { User } from('../models/user');
 
 describe('userRepo', () => {
 
@@ -9,17 +9,17 @@ describe('userRepo', () => {
         expect(reference1).toEqual(reference2);
     });
 
-    test('should return all users, without passwords, when getAllUsers is called', done => {
+    test('should return all users, without passwords, when getAllUsers is called', async () => {
         expect.assertions(3);
-        sut.getInstance().getAllUsers((err, result) => {
+        let result = await sut.getInstance().getAll()
             expect(err).toBeFalsy();
             expect(result.length).toBeGreaterThan(0);
-            expect(result[0].password).toBeFalsy();
+            expect(result[0].password).toBeUndefined();
             done();
         });
     });
 
-    test('should return correct user when getUserById is given a valid id', done => {
+    test('should return correct user when getUserById is given a valid id', async () => {
         expect.assertions(3);
         sut.getInstance().getUserById(1, (err, result) => {
             expect(err).toBeFalsy();
@@ -31,7 +31,8 @@ describe('userRepo', () => {
 
     test('should invoke error callback when getUserById is given an invalid id', done => {
         expect.assertions(2);
-        sut.getInstance().getUserById(-1, (err, result) => {
+        try{
+        await sut.getInstance().getUserById(-1, (err, result) => {
             expect(err).toBeTruthy();
             expect(result).toBeFalsy();
             done();
@@ -40,10 +41,11 @@ describe('userRepo', () => {
 
     test('should return correct user when getUserByUsername is given a known username', done => {
         expect.assertions(3);
-        sut.getInstance().getUserByUsername('aanderson', (err, result) => {
-            expect(err).toBeFalsy();
+        try{
+        await sut.getInstance().getUserByUsername('aanderson') 
+            
             expect(result).toBeTruthy();
-            expect(result.username).toEqual('aanderson');
+            expect(result.username).toBe('aanderson');
             done();
         });
     });
