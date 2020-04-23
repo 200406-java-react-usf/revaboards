@@ -35,8 +35,35 @@ export class UserReporsitory implements CrudRepository<User> {
                     return;
                 }
 
+<<<<<<< HEAD
                 resolve(users.map(this.removePassword));
             }, 1000);
+=======
+        });
+    
+    }
+
+    getById(id: number): Promise<User> {
+        return new Promise<User>((resolve, reject) => {
+            
+            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+                reject(new BadRequestError());
+            }
+
+            setTimeout(() => {
+                
+                const user = {...data.find(user => user.id === id)};
+
+                if(Object.keys(user).length === 0) {
+                    reject(new ResourceNotFoundError());
+                    return;
+                }
+
+                resolve(this.removePassword(user));
+
+            }, 250);
+
+>>>>>>> 69097bd6edc11a188725a1bb29c9adb9d792a8c1
         });
     }
 
