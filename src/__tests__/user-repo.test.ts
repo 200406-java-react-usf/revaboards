@@ -4,73 +4,73 @@ import { BadRequestError, AuthenticationError, ResourceNotFoundError } from '../
 
 describe('userRepo', () => {
 
-    test('should be a singleton', () => {
-        let reference1 = sut.getInstance();
-        let reference2 = sut.getInstance();
-        expect(reference1).toEqual(reference2);
-    });
+    // test('should be a singleton', () => {
+    //     let reference1 = sut.getInstance();
+    //     let reference2 = sut.getInstance();
+    //     expect(reference1).toEqual(reference2);
+    // });
 
-    test('should return all users (without passwords) when getAll is called', async () => {
-        expect.assertions(3);
-        let result = await sut.getInstance().getAll();
-        expect(result).toBeTruthy();
-        expect(result.length).toBeGreaterThan(0);
-        expect(result[0].password).toBeUndefined();
-    });
+    // test('should return all users (without passwords) when getAll is called', async () => {
+    //     expect.assertions(3);
+    //     let result = await sut.getInstance().getAll();
+    //     expect(result).toBeTruthy();
+    //     expect(result.length).toBeGreaterThan(0);
+    //     expect(result[0].password).toBeUndefined();
+    // });
 
-    test('should return correct user (without password) when getById is given a valid id', async () => {
-        expect.assertions(3);
-        let result = await sut.getInstance().getById(1);
-        expect(result).toBeTruthy();
-        expect(result.id).toBe(1);
-        expect(result.password).toBeUndefined();
-    });
+    // test('should return correct user (without password) when getById is given a valid id', async () => {
+    //     expect.assertions(3);
+    //     let result = await sut.getInstance().getById(1);
+    //     expect(result).toBeTruthy();
+    //     expect(result.id).toBe(1);
+    //     expect(result.password).toBeUndefined();
+    // });
 
-    test('should throw BadRequestError when getById is given an invalid id', async () => {
-        expect.assertions(1);
-        try {
-            await sut.getInstance().getById(-1);
-        } catch (e) {
-            expect(e instanceof BadRequestError).toBeTruthy();
-        }
-    });
+    // test('should throw BadRequestError when getById is given an invalid id', async () => {
+    //     expect.assertions(1);
+    //     try {
+    //         await sut.getInstance().getById(-1);
+    //     } catch (e) {
+    //         expect(e instanceof BadRequestError).toBeTruthy();
+    //     }
+    // });
 
-    test('should return correct user (without password) when getUserByUsername is given a known username', async () => {
-        expect.assertions(3);
-        let result = await sut.getInstance().getUserByUsername('aanderson');
-        expect(result).toBeTruthy();
-        expect(result.username).toBe('aanderson');
-        expect(result.password).toBeUndefined();
+    // test('should return correct user (without password) when getUserByUsername is given a known username', async () => {
+    //     expect.assertions(3);
+    //     let result = await sut.getInstance().getUserByUsername('aanderson');
+    //     expect(result).toBeTruthy();
+    //     expect(result.username).toBe('aanderson');
+    //     expect(result.password).toBeUndefined();
     
-    });
+    // });
 
-    test('should throw ResourceNotFoundError when getUserByUsername is given an unknown username', async () => {
-        expect.assertions(1);
-        try {
-            await sut.getInstance().getUserByUsername('nobody');
-        } catch (e) {
-            expect(e instanceof ResourceNotFoundError).toBeTruthy();
-        }
+    // test('should throw ResourceNotFoundError when getUserByUsername is given an unknown username', async () => {
+    //     expect.assertions(1);
+    //     try {
+    //         await sut.getInstance().getUserByUsername('nobody');
+    //     } catch (e) {
+    //         expect(e instanceof ResourceNotFoundError).toBeTruthy();
+    //     }
         
-    });
+    // });
 
-    test('should throw BadRequestError when getUserByUsername is given bad data', async () => {
-        expect.assertions(1);
-        try {
-            await sut.getInstance().getUserByUsername('');
-        } catch (e) {
-            expect(e instanceof BadRequestError).toBeTruthy();
-        }
-    });
+    // test('should throw BadRequestError when getUserByUsername is given bad data', async () => {
+    //     expect.assertions(1);
+    //     try {
+    //         await sut.getInstance().getUserByUsername('');
+    //     } catch (e) {
+    //         expect(e instanceof BadRequestError).toBeTruthy();
+    //     }
+    // });
 
-    test('should return correct user (without password) when getUserByCredentials is given valid credentials', async () => {
-        expect.assertions(3);
-        let result = await sut.getInstance().getUserByCredentials('aanderson', 'password');
-        expect(result).toBeTruthy();
-        expect(result.username).toBe('aanderson');
-        expect(result.password).toBeUndefined();
+    // test('should return correct user (without password) when getUserByCredentials is given valid credentials', async () => {
+    //     expect.assertions(3);
+    //     let result = await sut.getInstance().getUserByCredentials('aanderson', 'password');
+    //     expect(result).toBeTruthy();
+    //     expect(result.username).toBe('aanderson');
+    //     expect(result.password).toBeUndefined();
         
-    });
+    // });
     
     // Damola
     // test('should invoke error callback when getUserByCredentials is given invalid credentials', done => {
@@ -93,6 +93,23 @@ describe('userRepo', () => {
     // });
 
     // Jeremiah
+    test('should add a new user to the datasource when save is given a valid new user', async () => {
+
+        let validMockUser = new User(0, 'test', 'test', 'test', 'test', 'test@revature.com', new Date());
+
+        expect.assertions(1);
+        try{
+
+            await sut.getInstance().save(validMockUser);
+
+        }catch (e) {
+
+            expect(e instanceof AuthenticationError).toBeFalsy();
+
+        }
+    });
+
+    // Jeremiah Old way of doing it
     // test('should add a new user to the datasource when addNewUser is given a valid new user', done => {
         
     //     let validMockUser = new User(0, 'test', 'test', 'test', 'test', 'test@revature.com', new Date());
@@ -105,7 +122,7 @@ describe('userRepo', () => {
     //         done();
     //     }, () => {});
 
-    // });
+    //  });
 
     // Jeremy
     // test('should invoke error callback when addNewUser is given a new user with a conflicting username', done => {
@@ -122,6 +139,23 @@ describe('userRepo', () => {
     // });
 
     // Dontae
+    test('should invoke error callback when addNewUser is given a new user with a conflicting email', async () => {
+
+        let conflictingMockUser = new User(0, 'a', 'a', 'a', 'a', 'aanderson@revature.com', new Date());
+
+        expect.assertions(1);
+        try{
+
+            await sut.getInstance().save(conflictingMockUser);
+
+        }catch (e) {
+
+            expect(e instanceof BadRequestError).toBeTruthy();
+
+        }
+    });
+
+    // Dontae Old way of doing
     // test('should invoke error callback when addNewUser is given a new user with a conflicting email', done => {
         
     //     let conflictingMockUser = new User(0, 'a', 'a', 'a', 'a', 'aanderson@revature.com', new Date());
