@@ -1,7 +1,7 @@
 import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
-import mailWorker from'../util/mail-worker';
+//import mailWorker from'../util/mail-worker';
 
 import { 
     ResourceNotFoundError, 
@@ -48,26 +48,26 @@ export class UserRepository implements CrudRepository<User> {
 
     getById(id: number): Promise<User> {
         return new Promise<User>((resolve, reject) => {
-            
-            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+
+            if (typeof id !== 'number' || !id || id <= 0) {
                 reject(new BadRequestError());
+                return;
             }
-
+           
             setTimeout(() => {
+        
+                const user = {...data.filter(user => user.id === id)[0]};
                 
-                const user = {...data.find(user => user.id === id)};
-
-                if(Object.keys(user).length === 0) {
+                if (Object.keys(user).length == 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
-
+        
                 resolve(this.removePassword(user));
-
+        
             }, 250);
-
-        });
-    }
+    });
+}
 
     getUserByUsername(un: string): Promise<User> {
 

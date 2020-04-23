@@ -8,26 +8,26 @@ export class MailWorker extends EventEmitter {
 	port: number;
 
 	private constructor() {
-		super();
-		this.server = 'fake-smtp-server.com';
-		this.port = 25;
+	    super();
+	    this.server = 'fake-smtp-server.com';
+	    this.port = 25;
 	}
 
-    static getInstance(): MailWorker {
+	static getInstance(): MailWorker {
     	if (!MailWorker.instance) {
     		MailWorker.instance = new MailWorker();
     		MailWorker.instance.on('newRegister', recipient => console.log(`Email sent to ${recipient}`));
     	}
     	return MailWorker.instance;
-    }
+	}
 
-    on(event: string, listener) {
+	on(event: string, listener) {
     	super.on(event, listener);
     	return this;
-    }
+	}
 
-    emit(event: string, ...args) {
+	emit(event: string, ...args) {
     	super.emit(event, args);
     	return true;
-    }
+	}
 }

@@ -20,4 +20,4 @@ export class User {
         this.age = Math.abs(new Date(Date.now() - this.dob.getTime()).getUTCFullYear() - 1970);
     }
 
-};
+}

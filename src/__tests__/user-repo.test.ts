@@ -1,6 +1,10 @@
 import { UserRepository as sut } from '../repos/user-repo';
 import { User } from '../models/user';
-import { BadRequestError, AuthenticationError, ResourceNotFoundError } from '../errors/errors';
+import { 
+    BadRequestError, 
+    AuthenticationError, 
+    ResourceNotFoundError 
+} from '../errors/errors';
 
 describe('userRepo', () => {
 
@@ -206,14 +210,15 @@ describe('userRepo', () => {
     // });
 
     // Kaneisha
-    // test('should invoke error callback when when addNewUser is given a falsy user', done => {
-    //     expect.assertions(2);
-    //     sut.getInstance().addNewUser(null, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+    test('should invoke error callback when when addNewUser is given a falsy user', async () => {
+        expect.assertions(1);
+        
+        try {
+            await sut.getInstance().save(null);
+        } catch (e) {
+            expect (e instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
 
     // Jose

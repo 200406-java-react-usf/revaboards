@@ -1,83 +1,104 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const user_db_1 = require("../data/user-db");
-const mail_worker_1 = require("../util/mail-worker");
-const errors_1 = require("../errors/errors");
-class UserRepository {
-    constructor() { }
-    static getInstance() {
-        return !UserRepository.instance ? UserRepository.instance = new UserRepository() : UserRepository.instance;
+var user_db_1 = __importDefault(require("../data/user-db"));
+//import mailWorker from'../util/mail-worker';
+var errors_1 = require("../errors/errors");
+var UserRepository = /** @class */ (function () {
+    function UserRepository() {
     }
-    getAll() {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                let users = [];
-                for (let user of user_db_1.default) {
-                    users.push(Object.assign({}, user));
+    UserRepository.getInstance = function () {
+        return !UserRepository.instance ? UserRepository.instance = new UserRepository() : UserRepository.instance;
+    };
+    UserRepository.prototype.getAll = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                var users = [];
+                for (var _i = 0, data_1 = user_db_1.default; _i < data_1.length; _i++) {
+                    var user = data_1[_i];
+                    users.push(__assign({}, user));
                 }
                 if (users.length == 0) {
                     reject(new errors_1.ResourceNotFoundError());
                     return;
                 }
-                resolve(users.map(this.removePassword));
+                resolve(users.map(_this.removePassword));
             }, 250);
         });
-    }
-    getById(id) {
-        return new Promise((resolve, reject) => {
-            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+    };
+    UserRepository.prototype.getById = function (id) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof id !== 'number' || !id || id <= 0) {
                 reject(new errors_1.BadRequestError());
                 return;
             }
-            setTimeout(() => {
-                const user = Object.assign({}, user_db_1.default.filter(user => user.id === id).pop());
-                if (!user) {
-                    reject(new errors_1.ResourceNotFoundError());
-                    return;
-                }
-                resolve(this.removePassword(user));
-            }, 250);
-        });
-    }
-    getUserByUsername(un) {
-        return new Promise((resolve, reject) => {
-            if (typeof un !== 'string' || !un) {
-                reject(new errors_1.BadRequestError());
-                return;
-            }
-            setTimeout(() => {
-                const user = Object.assign({}, user_db_1.default.filter(user => user.username === un).pop());
+            setTimeout(function () {
+                var user = __assign({}, user_db_1.default.filter(function (user) { return user.id === id; })[0]);
                 if (Object.keys(user).length == 0) {
                     reject(new errors_1.ResourceNotFoundError());
                     return;
                 }
-                resolve(this.removePassword(user));
+                resolve(_this.removePassword(user));
             }, 250);
         });
-    }
-    getUserByCredentials(un, pw) {
-        return new Promise((resolve, reject) => {
+    };
+    UserRepository.prototype.getUserByUsername = function (un) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof un !== 'string' || !un) {
+                reject(new errors_1.BadRequestError());
+                return;
+            }
+            setTimeout(function () {
+                var user = __assign({}, user_db_1.default.filter(function (user) { return user.username === un; })[0]);
+                if (Object.keys(user).length == 0) {
+                    reject(new errors_1.ResourceNotFoundError());
+                    return;
+                }
+                resolve(_this.removePassword(user));
+            }, 250);
+        });
+    };
+    UserRepository.prototype.getUserByCredentials = function (un, pw) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
             if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
                 reject(new errors_1.BadRequestError());
                 return;
             }
-            setTimeout(() => {
-                const user = user_db_1.default.filter(user => user.username === un && user.password === pw).pop();
-                if (!user) {
+            setTimeout(function () {
+                var user = __assign({}, user_db_1.default.filter(function (user) { return user.username === un && user.password === pw; }).pop());
+                if (Object.keys(user).length === 0) {
                     reject(new errors_1.AuthenticationError('Bad credentials provided.'));
                     return;
                 }
-                resolve(this.removePassword(user));
+                resolve(_this.removePassword(user));
             }, 250);
         });
-    }
-    save(newUser) {
-        return new Promise((resolve, reject) => {
+    };
+    UserRepository.prototype.save = function (newUser) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
             if (!newUser) {
                 reject(new errors_1.BadRequestError('Falsy user object provided.'));
                 return;
             }
-            let invalid = !Object.keys(newUser).every(key => {
+            var invalid = !Object.keys(newUser).every(function (key) {
                 if (key == 'id')
                     return true;
                 return newUser[key];
@@ -86,26 +107,26 @@ class UserRepository {
                 reject(new errors_1.BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
-            setTimeout(() => {
-                let conflict = user_db_1.default.filter(user => user.username == newUser.username).pop();
+            setTimeout(function () {
+                var conflict = user_db_1.default.filter(function (user) { return user.username == newUser.username; }).pop();
                 if (conflict) {
                     reject(new errors_1.ResourcePersistenceError('The provided username is already taken.'));
                     return;
                 }
-                conflict = user_db_1.default.filter(user => user.email == newUser.email).pop();
+                conflict = user_db_1.default.filter(function (user) { return user.email == newUser.email; }).pop();
                 if (conflict) {
                     reject(new errors_1.ResourcePersistenceError('The provided email is already taken.'));
                     return;
                 }
                 newUser.id = (user_db_1.default.length) + 1;
                 user_db_1.default.push(newUser);
-                mail_worker_1.MailWorker.getInstance().emit('newRegister', newUser.email);
-                resolve(this.removePassword(newUser));
+                // mailWorker.emit('newRegister', newUser.email);
+                resolve(_this.removePassword(newUser));
             });
         });
-    }
-    update(updatedUser) {
-        return new Promise((resolve, reject) => {
+    };
+    UserRepository.prototype.update = function (updatedUser) {
+        return new Promise(function (resolve, reject) {
             if (!updatedUser) {
                 reject(new errors_1.BadRequestError('Falsy user object provided.'));
                 return;
@@ -114,13 +135,13 @@ class UserRepository {
                 reject(new errors_1.BadRequestError('An id must be provided for update operations.'));
                 return;
             }
-            let invalid = !Object.values(updatedUser).every(val => val);
+            var invalid = !Object.values(updatedUser).every(function (val) { return val; });
             if (invalid) {
                 reject(new errors_1.BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
-            setTimeout(() => {
-                let persistedUser = user_db_1.default.find(user => user.id === updatedUser.id);
+            setTimeout(function () {
+                var persistedUser = user_db_1.default.find(function (user) { return user.id === updatedUser.id; });
                 if (!persistedUser) {
                     reject(new errors_1.ResourceNotFoundError('No user found with provided id.'));
                 }
@@ -128,7 +149,7 @@ class UserRepository {
                     reject(new errors_1.ResourcePersistenceError('Usernames cannot be updated.'));
                     return;
                 }
-                const conflict = user_db_1.default.filter(user => {
+                var conflict = user_db_1.default.filter(function (user) {
                     if (user.id == updatedUser.id)
                         return false;
                     return user.email == updatedUser.email;
@@ -141,16 +162,17 @@ class UserRepository {
                 resolve(true);
             });
         });
-    }
-    deleteById(id) {
-        return new Promise((resolve, reject) => {
-            reject('Not implemented');
+    };
+    UserRepository.prototype.deleteById = function (id) {
+        return new Promise(function (resolve, reject) {
+            reject(new errors_1.NotImplementedError());
         });
-    }
-    removePassword(user) {
-        let usr = Object.assign({}, user);
+    };
+    UserRepository.prototype.removePassword = function (user) {
+        var usr = __assign({}, user);
         delete usr.password;
         return usr;
-    }
-}
+    };
+    return UserRepository;
+}());
 exports.UserRepository = UserRepository;
