@@ -285,17 +285,15 @@ describe('userRepo', () => {
     // });
 
     // Abraham
-    // test('should invoke error callback when updateUser is given an invalid updated user (falsy password)', done => {
+    test('should throw error when updateUser is given an invalid updated user (falsy password)', async () => {
 
-    //     let updatedUser = new User(1, 'aanderson', '', 'updated', 'updated', 'bbailey@revature.com', new Date());
-
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+        expect.assertions(1);
+        try {
+            await sut.getInstance().update(new User(1, 'aanderson', '', 'updated', 'updated', 'bbailey@revature.com', new Date()));
+        } catch (e) {
+            expect(e instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
     // Besim
     // test('should invoke error callback when updateUser is given an invalid updated user (falsy firstName)', done => {
