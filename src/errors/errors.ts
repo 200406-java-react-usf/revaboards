@@ -82,7 +82,11 @@ export {
 <<<<<<< HEAD
     AuthenticationError,
     NotImplementedError
+<<<<<<< HEAD
 =======
     AuthenticationError
 >>>>>>> 608a7c8bff2ebd9da535bef7135252af113905e5
 }
+=======
+};
+>>>>>>> 8153c2805155dccefcc0668532ec580f9e013978
