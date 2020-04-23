@@ -83,14 +83,14 @@ describe('userRepo', () => {
     // });
 
     // Andrew
-    // test('should invoke error callback when getUserByCredentials is given bad data', done => {
-    //     expect.assertions(2);
-    //     sut.getInstance().getUserByCredentials('', '', (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+    test('should throw AuthenticationError when getUserByCredentials is given bad data', async () => {
+        expect.assertions(1);
+        try{
+            await sut.getInstance().getUserByCredentials('');
+        } catch (err) {
+            expect(err instanceof AuthenticationError).toBeTruthy();
+        }
+    });
 
     // Jeremiah
     // test('should add a new user to the datasource when addNewUser is given a valid new user', done => {
