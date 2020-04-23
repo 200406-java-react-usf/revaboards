@@ -8,7 +8,6 @@ export class User {
     email: string;
     dob: Date;
     age: number;
-    
 
     constructor(id: number, un: string, pw: string, fn: string, ln: string, email: string, dob: Date) {
         this.id = id;
