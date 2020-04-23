@@ -338,17 +338,14 @@ describe('userRepo', () => {
     // });
 
     // Delissa
-    // test('should invoke error callback when updateUser is given an invalid updated user (falsy dob)', done => {
-
-    //     let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', null);
-
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+    test('should invoke error when update is given an invalid updated user (falsy dob)', async() => {
+        expect.assertions(1);
+        try{
+            await sut.getInstance().update(new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', new Date('fgffdsgj')))
+        }catch (e) {
+            expect (e instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
     // Louis
     // test('should invoke error callback when updateUser is given an falsy user', done => {
