@@ -340,8 +340,9 @@ describe('userRepo', () => {
     // Delissa
     test('should invoke error when update is given an invalid updated user (falsy dob)', async() => {
         expect.assertions(1);
+        let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', null);
         try{
-            await sut.getInstance().update(new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', new Date('fgffdsgj')))
+            await sut.getInstance().update(updatedUser);
         }catch (e) {
             expect (e instanceof BadRequestError).toBeTruthy();
         }
