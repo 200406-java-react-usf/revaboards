@@ -1,11 +1,14 @@
 import { User } from '../models/user';
 <<<<<<< HEAD:src/data/user-db.ts
+<<<<<<< HEAD:src/data/user-db.ts
 
 let id = 1;
 
 export default [
     new User(id++, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', '01/01/1990'),
 =======
+=======
+>>>>>>> 8153c2805155dccefcc0668532ec580f9e013978:src/data/user-db.js
 let id = 1;
 
 export default [
