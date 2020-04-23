@@ -1,6 +1,7 @@
 import { UserRepository as sut } from '../repos/user-repo';
 import { User } from '../models/user';
 import { BadRequestError, AuthenticationError, ResourceNotFoundError } from '../errors/errors';
+import userDb from '../data/user-db';
 
 describe('userRepo', () => {
 
@@ -324,18 +325,17 @@ describe('userRepo', () => {
     // });
 
     // Josef
-    // test('should invoke error callback when updateUser is given an invalid updated user (falsy email)', done => {
+    test('should throw BadRequestError when updateUser is given an invalid updated user (falsy email)', async () => {
 
-    //     let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', '', new Date());
-
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-
-    // });
+        expect.assertions(1);
+        let result = new User(1, 'aanderson', 'password', 'Alice', 'Anderson', '', new Date('01/01/1995'));
+        
+        try {
+            await sut.getInstance().update(result);
+        } catch (e) {
+            expect(e instanceof BadRequestError).toBeTruthy();
+        }
+    });
 
     // Delissa
     // test('should invoke error callback when updateUser is given an invalid updated user (falsy dob)', done => {

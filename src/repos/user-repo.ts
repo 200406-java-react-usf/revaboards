@@ -185,7 +185,7 @@ export class UserRepository implements CrudRepository<User> {
             }
         
             let invalid = !Object.values(updatedUser).every(val => val);
-        
+
             if (invalid) {
                 reject(new BadRequestError('Invalid property values found in provided user.'));
                 return;
