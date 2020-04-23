@@ -1,6 +1,6 @@
 import { UserRepository as sut } from '../repos/user-repo';
 import { User } from '../models/user';
-import { BadRequestError, AuthenticationError, ResourceNotFoundError } from '../errors/errors';
+import { BadRequestError, AuthenticationError, ResourceNotFoundError, NotImplementedError } from '../errors/errors';
 
 describe('userRepo', () => {
 
@@ -230,18 +230,22 @@ describe('userRepo', () => {
 
     // });
 
-    // Kennedy
-    // test('should invoke error callback when updateUser is given an updated user with an updated username', done => {
+    //Kennedy
+    
+    test('should invoke error when updateUser is given an updated user with an updated username', async () => {
 
-    //     let updatedUser = new User(1, 'updated', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
+        let updatedUser = new User(1, 'updated', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
 
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+        expect.assertions(2);
+        
+        try {
+            await sut.getInstance().update(updatedUser);
+        } catch (e) {
+            expect(e instanceof NotImplementedError).toBeTruthy();
+        }
+
+    });
+
 
     // Neftaly
     // test('should invoke error callback when updateUser is given an updated user with a conflicting username', done => {
