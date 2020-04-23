@@ -4,8 +4,9 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "tsc && node build/index.js",
-    "test": "jest"
+    "start": "tsc && node ./build/index.js",
+    "test": "jest --watch",
+    "coverage": "jest --coverage"
   },
   "author": "Wezley Singleton",
   "license": "ISC",
