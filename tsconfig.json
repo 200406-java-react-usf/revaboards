@@ -11,6 +11,6 @@
 
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*", "src/__tests__/user-repo.test.ts"
   ]
 }

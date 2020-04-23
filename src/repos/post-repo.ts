@@ -1,8 +1,8 @@
 import data from '../data/post-db';
 import { Post } from '../models/post';
 import { CrudRepository } from './crud-repo';
-import { 
-    BadRequestError, 
+import {
+    BadRequestError,
     ResourceNotFoundError,
     ResourcePersistenceError,
     NotImplementedError
@@ -14,31 +14,31 @@ export class PostRepository implements CrudRepository<Post> {
 
     getAll(): Promise<Post[]> {
 
-        return new Promise((resolve, reject)  => {
+        return new Promise((resolve, reject) => {
 
             setTimeout(() => {
 
                 let posts: Post[] = [];
 
-                for(let post of data) {
-                    posts.push({...post});
+                for (let post of data) {
+                    posts.push({ ...post });
                 }
 
-                if(posts.length === 0) {
+                if (posts.length === 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
 
                 resolve(posts);
 
-                
+
             }, 1000);
 
         });
     }
 
     getById(id: number): Promise<Post> {
-    
+
         return new Promise<Post>((resolve, reject) => {
 
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
@@ -46,17 +46,17 @@ export class PostRepository implements CrudRepository<Post> {
                 return;
             }
 
-            setTimeout(function() {
-        
-                const post: Post = {...data.filter(post => post.id === id).pop()};
+            setTimeout(function () {
 
-                if(!post) {
+                const post = { ...data.filter(post => post.id === id)[0] };
+
+                if (!post) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
 
                 resolve(post);
-                
+
             }, 250);
 
         });
@@ -88,7 +88,7 @@ export class PostRepository implements CrudRepository<Post> {
                 return;
             }
 
-            setTimeout(function() {
+            setTimeout(function () {
                 const posts = data.filter(post => post.posterId == pid);
                 resolve(posts);
             }, 250);
@@ -96,12 +96,12 @@ export class PostRepository implements CrudRepository<Post> {
         });
     }
 
-    private constructor(){
+    private constructor() {
 
     }
 
     public static getInstance(): PostRepository {
-        if(!PostRepository.instance){
+        if (!PostRepository.instance) {
             PostRepository.instance = new PostRepository();
         }
 

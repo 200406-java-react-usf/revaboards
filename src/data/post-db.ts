@@ -1,5 +1,5 @@
-const { Post } = require('../models/post');
-//import { Post } from '../models/post'
+//const { Post } = require('../models/post');
+import { Post } from '../models/post';
 let id = 1;
 
 // challenge: replace this with id generator function

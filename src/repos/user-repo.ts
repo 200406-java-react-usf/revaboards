@@ -1,12 +1,52 @@
-const data = require('../data/user-db');
-const errors = require('../errors/errors');
+import { CrudRepository } from "./crud-repo";
+import data from '../data/user-db';
+import { User } from '../models/user'
+import { ResourceNotFoundError } from '../errors/errors'
 const mailWorker = require('../util/mail-worker');
+
+export class UserRepository implements CrudRepository<User> {
+
+    private static instace: UserRepository;
+    private constructor() { }
+
+    getAll(): Promise<User[]> {
+
+        return new Promise<User[]>((resolve, reject) => {
+            setTimeout(() => {
+            
+            let users = [];
+
+            for (let user of data) {
+                users.push({...user});
+            }
+    
+            if (users.length == 0) {
+                reject(new ResourceNotFoundError());
+                return;
+            }
+    
+            users = users.map(user => {
+                delete user.password;
+                return user;
+            });
+    
+            resolve(users.map(this.removePassword));
+    
+        }, 250);
+    }
+    };
+        
+        
+
+
+
+    static getInstance() {
+        return !UserRepository.instace ? UserRepository.instace = new UserRepository() : UserRepository.instace;
+    }
+}
 
 module.exports = (function() {
 
-    let instance;
-
-    function init() {
 
         const getAllUsers = (cb) => {
 
@@ -14,7 +54,7 @@ module.exports = (function() {
                 
                 let users = [];
     
-                for (user of data) {
+                for (let user of data) {
                     users.push({...user});
                 }
         
@@ -31,7 +71,7 @@ module.exports = (function() {
                 cb(null, users);
         
             }, 250);
-        }
+        };
     
         const getUserById = (id) => { //used thunks to return the result
             let fn; //declared fn
@@ -50,15 +90,15 @@ module.exports = (function() {
                     fn(new errors.ResourceNotFoundError()); //since we are inside the setTimeout we set the fn = resource error
                 }
                 else if(fn){ //if the fn is empty then set it to our retrieved user
-                         fn(user); 
-                    }
+                    fn(user); 
+                }
             }, 250);
             return function(cb){ //we return a callback function
                 fn = cb; // if we havent gotten a result yet then we set fn = to our callback function
                 
-            }
+            };
         
-        }
+        };
         
         const getUserByUsername = (un) => {
         
@@ -97,10 +137,10 @@ module.exports = (function() {
                         resolve(user);
                     }
                     
-                })
-            })
+                });
+            });
         
-        }
+        };
         
         const getUserByCredentials = (un, pw, cb) => {
         
@@ -122,7 +162,7 @@ module.exports = (function() {
         
             }, 250);
         
-        }
+        };
         
         const addNewUser = (newUser, cb) => {
             
@@ -133,7 +173,7 @@ module.exports = (function() {
         
             let invalid = !Object.keys(newUser).every(key => {
                 if(key == 'id') return true;
-                return newUser[key]
+                return newUser[key];
             });
         
             if (invalid) {
@@ -166,7 +206,7 @@ module.exports = (function() {
         
             });
         
-        }
+        };
         
         const updateUser = (updatedUser, cb) => {
         
@@ -192,7 +232,7 @@ module.exports = (function() {
                 let persistedUser = data.find(user => user.id === updatedUser.id);
         
                 if (!persistedUser) {
-                    cb(new errors.ResourceNotFoundError('No user found with provided id.'))
+                    cb(new errors.ResourceNotFoundError('No user found with provided id.'));
                 }
                 
                 if (persistedUser.username != updatedUser.username) {
@@ -215,23 +255,8 @@ module.exports = (function() {
         
             });
         
-        }
+        };
     
-        return {
-            getAllUsers,
-            getUserById,
-            getUserByUsername,
-            getUserByCredentials,
-            addNewUser,
-            updateUser
-        }
 
-    }
-
-    return {
-        getInstance: function() {
-            return !instance ? instance = init() : instance;
-        }
-    }
 
 })();

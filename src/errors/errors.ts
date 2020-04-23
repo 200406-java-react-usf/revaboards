@@ -64,4 +64,4 @@ export {
     BadRequestError,
     AuthenticationError,
     NotImplementedError
-}
+};
