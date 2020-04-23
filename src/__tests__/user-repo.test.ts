@@ -323,7 +323,7 @@ describe('userRepo', () => {
     //     });
     // });
 
-    test('should invoke error callback when updateUser is given an invalid updated user (falsy lastName)', async () => {
+    test('should throw BadRequestError when update is given an invalid updated user (falsy lastName)', async () => {
 
         let updatedUser = new User(1, 'aanderson', 'updated', 'updated', '', 'bbailey@revature.com', new Date());
 
