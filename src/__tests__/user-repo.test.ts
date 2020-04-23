@@ -192,7 +192,7 @@ describe('userRepo', () => {
     // });
 
     // Scott
-    test('should invoke error callback when addNewUser (save) is given an invalid new user (falsy dob)', async () => { 
+    test('should throw error when save (adding new user) is given an invalid new user (falsy dob)', async () => { 
         expect.assertions(1);
         try {
             await sut.getInstance().save(new User(0, 'a', 'a', 'a', 'a', 'a@revature.com', null));
@@ -200,7 +200,6 @@ describe('userRepo', () => {
             console.log(e);
             expect(e instanceof BadRequestError).toBeTruthy();
         }
-
     });
 
     // Kaneisha
