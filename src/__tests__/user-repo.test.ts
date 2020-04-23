@@ -330,7 +330,7 @@ describe('userRepo', () => {
 
         expect.assertions(1);
         try {
-            await sut.getInstance().save(updatedUser);
+            await sut.getInstance().update(updatedUser);
         }
         catch(x) {
             expect(x instanceof BadRequestError).toBeTruthy();
