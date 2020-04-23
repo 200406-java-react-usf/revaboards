@@ -73,7 +73,24 @@ export class UserRepository implements CrudRepository<User> {
 
     save(newUser: User): Promise<User> {
         return new Promise<User>((resolve, reject) => {
-            reject(new NotImplementedError());
+            
+            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+                reject(new BadRequestError());
+            }
+
+            setTimeout(() => {
+                
+                const user = {...data.find(user => user.id === id)};
+
+                if(Object.keys(user).length === 0) {
+                    reject(new ResourceNotFoundError());
+                    return;
+                }
+
+                resolve(this.removePassword(user));
+
+            }, 250);
+
         });
     }
 
