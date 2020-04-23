@@ -41,7 +41,7 @@ describe('userRepo', () => {
         expect(result).toBeTruthy();
         expect(result.username).toBe('aanderson');
         expect(result.password).toBeUndefined();
-    
+
     });
 
     test('should throw ResourceNotFoundError when getUserByUsername is given an unknown username', async () => {
@@ -51,7 +51,7 @@ describe('userRepo', () => {
         } catch (e) {
             expect(e instanceof ResourceNotFoundError).toBeTruthy();
         }
-        
+
     });
 
     test('should throw BadRequestError when getUserByUsername is given bad data', async () => {
@@ -69,9 +69,9 @@ describe('userRepo', () => {
         expect(result).toBeTruthy();
         expect(result.username).toBe('aanderson');
         expect(result.password).toBeUndefined();
-        
+
     });
-    
+
     // Damola
     // test('should invoke error callback when getUserByCredentials is given invalid credentials', done => {
     //     expect.assertions(2);
@@ -94,9 +94,9 @@ describe('userRepo', () => {
 
     // Jeremiah
     // test('should add a new user to the datasource when addNewUser is given a valid new user', done => {
-        
+
     //     let validMockUser = new User(0, 'test', 'test', 'test', 'test', 'test@revature.com', new Date());
-        
+
     //     expect.assertions(3);
     //     sut.getInstance().addNewUser(validMockUser, (err, result) => {
     //         expect(err).toBeFalsy();
@@ -109,9 +109,9 @@ describe('userRepo', () => {
 
     // Jeremy
     // test('should invoke error callback when addNewUser is given a new user with a conflicting username', done => {
-        
+
     //     let conflictingMockUser = new User(0, 'aanderson', 'test', 'test', 'test', 'test@revature.com', new Date());
-        
+
     //     expect.assertions(2);
     //     sut.getInstance().addNewUser(conflictingMockUser, (err, result) => {
     //         expect(err).toBeTruthy();
@@ -123,9 +123,9 @@ describe('userRepo', () => {
 
     // Dontae
     // test('should invoke error callback when addNewUser is given a new user with a conflicting email', done => {
-        
+
     //     let conflictingMockUser = new User(0, 'a', 'a', 'a', 'a', 'aanderson@revature.com', new Date());
-        
+
     //     expect.assertions(2);
     //     sut.getInstance().addNewUser(conflictingMockUser, (err, result) => {
     //         expect(err).toBeTruthy();
@@ -137,9 +137,9 @@ describe('userRepo', () => {
 
     // Kevin
     // test('should invoke error callback when addNewUser is given an invalid new user (falsy username)', done => {
-        
+
     //     let invalidMockUser = new User(0, '', 'a', 'a', 'a', 'a@revature.com', new Date());
-        
+
     //     expect.assertions(2);
     //     sut.getInstance().addNewUser(invalidMockUser, (err, result) => {
     //         expect(err).toBeTruthy();
@@ -151,9 +151,9 @@ describe('userRepo', () => {
 
     // Hao
     // test('should invoke error callback when addNewUser is given an invalid new user (falsy password)', done => {
-        
+
     //     let invalidMockUser = new User(0, 'a', '', 'a', 'a', 'a@revature.com', new Date());
-        
+
     //     expect.assertions(2);
     //     sut.getInstance().addNewUser(invalidMockUser, (err, result) => {
     //         expect(err).toBeTruthy();
@@ -165,9 +165,9 @@ describe('userRepo', () => {
 
     // John
     // test('should invoke error callback when addNewUser is given an invalid new user (falsy firstName)', done => {
-        
+
     //     let invalidMockUser = new User(0, 'a', 'a', '', 'a', 'a@revature.com', new Date());
-        
+
     //     expect.assertions(2);
     //     sut.getInstance().addNewUser(invalidMockUser, (err, result) => {
     //         expect(err).toBeTruthy();
@@ -179,9 +179,9 @@ describe('userRepo', () => {
 
     // Thomas
     // test('should invoke error callback when addNewUser is given an invalid new user (falsy lastName)', done => {
-        
+
     //     let invalidMockUser = new User(0, 'a', 'a', 'a', 'a', '', new Date());
-        
+
     //     expect.assertions(2);
     //     sut.getInstance().addNewUser(invalidMockUser, (err, result) => {
     //         expect(err).toBeTruthy();
@@ -193,9 +193,9 @@ describe('userRepo', () => {
 
     // Scott
     // test('should invoke error callback when addNewUser is given an invalid new user (falsy dob)', done => {
-        
+
     //     let invalidMockUser = new User(0, 'a', 'a', 'a', 'a', 'a@revature.com', null);
-        
+
     //     expect.assertions(2);
     //     sut.getInstance().addNewUser(invalidMockUser, (err,result) => {
     //         expect(err).toBeTruthy();
@@ -217,18 +217,15 @@ describe('userRepo', () => {
 
 
     // Jose
-    // test('should update user within the datasource when updateUser is given a valid updated user', done => {
+    test('should update user within the datasource when updateUser is given a valid updated user', async () => {
+        expect.assertions(1);
+        let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', new Date('06/06/1996'));
+        let result = await sut.getInstance().update(updatedUser);
+        console.log(updatedUser); // just to check our input, take out before pushing
+        console.log(result); // just to check the boolean return, take out before pushing
+        expect(result).toBeTruthy();
 
-    //     let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
-
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeFalsy();
-    //         expect(result).toBeTruthy();
-    //         done();
-    //     });
-
-    // });
+    });
 
     // Kennedy
     // test('should invoke error callback when updateUser is given an updated user with an updated username', done => {
@@ -255,7 +252,7 @@ describe('userRepo', () => {
     //         done();
     //     });
     // });
-    
+
     // Juan
     // test('should invoke error callback when updateUser is given an updated user with a conflicting email', done => {
 
