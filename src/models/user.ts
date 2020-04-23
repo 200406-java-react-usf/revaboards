@@ -6,20 +6,23 @@ export class User {
     firstName: string;
     lastName: string;
     email: string;
-    dob: string;
+    dob: Date;
+    age: number;
 
-    constructor(id: number, un: string, pw: string, fn: string, ln: string, email: string, dob: string) {
-    	this.id = id;
-    	this.username = un;
-    	this.password = pw;
-    	this.firstName = fn;
-    	this.lastName = ln;
-    	this.email = email;
-    	this.dob = dob;
+    constructor(id: number, un: string, pw: string, fn: string, ln: string, email: string, dob: Date) {
+        this.id = id;
+        this.username = un;
+        this.password = pw;
+        this.firstName = fn;
+        this.lastName = ln;
+        this.email = email;
+        this.dob = dob;
+        this.age = Math.abs(new Date(Date.now() - this.dob.getTime()).getUTCFullYear() - 1970);
+
     }
 
-	// age() {
-	//     return Math.abs(new Date(Date.now() - this.dob.getTime()) - 1970);
-	// }
+    // age() {
+    //     return Math.abs(new Date(Date.now() - this.dob.getTime()) - 1970);
+    // }
 
 } 

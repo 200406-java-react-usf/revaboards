@@ -5,95 +5,95 @@ import { BadRequestError, ResourceNotFoundError, ResourcePersistenceError, NotIm
 
 export class PostRepository implements CrudRepository<Post> {
 
-	getAll(): Promise<Post[]> {
-		return new Promise((resolve,reject) => {
-			setTimeout(() => {
+    getAll(): Promise<Post[]> {
+        return new Promise((resolve,reject) => {
+            setTimeout(() => {
 
-				let posts: Post[] = [];
+                let posts: Post[] = [];
                 
-				for (let post of data){
-					posts.push({...post});
-				}
+                for (let post of data){
+                    posts.push({...post});
+                }
 
-				if(posts.length === 0){
-					reject(new ResourceNotFoundError());
-					return;
-				}
+                if(posts.length === 0){
+                    reject(new ResourceNotFoundError());
+                    return;
+                }
 
-				resolve(posts);
+                resolve(posts);
 
-			}, 1000);
-		});
-	}
+            }, 1000);
+        });
+    }
 
-	getById(id: number): Promise<Post> {
-		return new Promise<Post>((resolve, reject) => {
+    getById(id: number): Promise<Post> {
+        return new Promise<Post>((resolve, reject) => {
     
-			if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
-				reject(new BadRequestError());
-				return;
-			}
+            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+                reject(new BadRequestError());
+                return;
+            }
 
-			setTimeout(function() {
+            setTimeout(function() {
             
-				const post: Post = {...data.filter(post => post.id === id).pop() as Post};
+                const post: Post = {...data.filter(post => post.id === id).pop() as Post};
 
-				if (!post) {
-					reject(new ResourceNotFoundError());
-					return;
-				}
+                if (!post) {
+                    reject(new ResourceNotFoundError());
+                    return;
+                }
 
-				resolve(post);
+                resolve(post);
                     
-			}, 250);
+            }, 250);
             
 
-		});
-	}
+        });
+    }
 
-	save(newPost: Post): Promise<Post> {
+    save(newPost: Post): Promise<Post> {
 
-		return new Promise<Post>((resolve,reject) => {
-			reject(new NotImplementedError());
-		});
+        return new Promise<Post>((resolve,reject) => {
+            reject(new NotImplementedError());
+        });
 
-	}
+    }
 
-	update(updatedPost: Post): Promise<boolean> {
+    update(updatedPost: Post): Promise<boolean> {
 
-		return new Promise<boolean>((resolve,reject) => {
-			reject(new NotImplementedError());
-		});
+        return new Promise<boolean>((resolve,reject) => {
+            reject(new NotImplementedError());
+        });
 
-	}
+    }
 
-	deleteById(id: number): Promise<boolean> {
+    deleteById(id: number): Promise<boolean> {
 
-		return new Promise<boolean>((resolve,reject) => {
-			reject(new NotImplementedError());
-		});
+        return new Promise<boolean>((resolve,reject) => {
+            reject(new NotImplementedError());
+        });
 
-	}
+    }
 
-	getPostsByPosterId(pid: number): Promise<Post[]> {
+    getPostsByPosterId(pid: number): Promise<Post[]> {
     
-		return new Promise<Post[]>((resolve,reject) => {
+        return new Promise<Post[]>((resolve,reject) => {
 
-			if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) {
-				reject(new BadRequestError());
-				return;
-			}
+            if (typeof pid !== 'number' || !Number.isInteger(pid) || pid <= 0) {
+                reject(new BadRequestError());
+                return;
+            }
 
-			setTimeout(() => {
+            setTimeout(() => {
 
-				const posts = data.filter(post => post.posterId == pid);
-				resolve(posts);
+                const posts = data.filter(post => post.posterId == pid);
+                resolve(posts);
 
-			}, 1000);
+            }, 1000);
 
-		});
+        });
 
-	}
+    }
 
 }
 

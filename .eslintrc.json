@@ -22,7 +22,7 @@
     "rules": {
         "indent": [
             "error",
-            "tab"
+            4
         ],
         "linebreak-style": [
             "error",
@@ -37,4 +37,11 @@
             "always"
         ]
     }
+    // "overrides":{
+    //     "files": [["**/*.ts"]],
+    //     "parser":"@typescript-eslint/parser",
+    //     "rules":{
+    //         "no-undef": "off"
+    //     }
+    // }
 }
