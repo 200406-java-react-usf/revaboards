@@ -1,5 +1,6 @@
 export class User {
 
+<<<<<<< HEAD
 	id: number;
 	username: string;
 	password: string;
@@ -20,3 +21,24 @@ export class User {
 		this.age = Math.abs(new Date(Date.now() - this.dob.getTime()).getUTCFullYear() - 1970);    
 	}
 }
+=======
+    id: number;
+    username: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    dob: Date;
+
+    constructor(id: number, un: string, pw: string, fn: string, ln: string, email: string, dob: Date) {
+        this.id = id;
+        this.username = un;
+        this.password = pw;
+        this.firstName = fn;
+        this.lastName = ln;
+        this.email = email;
+        this.dob = dob;
+    }
+
+};
+>>>>>>> daf77b61dba2347995fae4e5003f00e0aa703e03
