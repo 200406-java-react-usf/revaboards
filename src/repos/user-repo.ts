@@ -1,6 +1,7 @@
 import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
+import Validator from '../util/validator';
 import {  
     AuthenticationError, 
     BadRequestError, 
@@ -25,7 +26,7 @@ export class UserRepository implements CrudRepository<User> {
 
             setTimeout(() => {
             
-                let users = [];
+                let users: User[] = [];
     
                 for (let user of data) {
                     users.push({...user});
@@ -47,7 +48,7 @@ export class UserRepository implements CrudRepository<User> {
     getById(id: number): Promise<User> {
         return new Promise<User>((resolve, reject) => {
             
-            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+            if (!Validator.isValidId(id)) {
                 reject(new BadRequestError());
             }
 
@@ -124,31 +125,21 @@ export class UserRepository implements CrudRepository<User> {
             
         return new Promise<User>((resolve, reject) => {
 
-            if (!newUser) {
-                reject(new BadRequestError('Falsy user object provided.'));
-                return;
-            }
-        
-            let invalid = !Object.keys(newUser).every(key => {
-                if(key == 'id') return true;
-                return newUser[key];
-            });
-        
-            if (invalid) {
-                reject(new BadRequestError('Invalid property values found in provided user.'));
+            if (!Validator.isValidObject(newUser, 'id')) {
+                reject(new BadRequestError('Invalid user object provided.'));
                 return;
             }
         
             setTimeout(() => {
         
-                let conflict = data.filter(user => user.username == newUser.username).pop();
+                let conflict = data.find(user => user.username == newUser.username);
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('The provided username is already taken.'));
                     return;
                 }
         
-                conflict = data.filter(user => user.email == newUser.email).pop();
+                conflict = data.find(user => user.email == newUser.email);
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('The provided email is already taken.'));
@@ -170,19 +161,8 @@ export class UserRepository implements CrudRepository<User> {
         
         return new Promise<boolean>((resolve, reject) => {
 
-            if (!updatedUser) {
-                reject(new BadRequestError('Falsy user object provided.'));
-                return;
-            }
-
-            let isValidId = this.isValidId(updatedUser.id);
-            if(!isValidId) {
-                reject(new BadRequestError('A valid id must be provided for update operations.'));
-            }
-        
-            let isValidUser = Object.values(updatedUser).every(val => val);
-            if (!isValidUser) {
-                reject(new BadRequestError('Invalid property values found in provided user.'));
+            if (!Validator.isValidObject(updatedUser)) {
+                reject(new BadRequestError('Invalid user object provided (falsy values found).'));
                 return;
             }
         
@@ -200,10 +180,10 @@ export class UserRepository implements CrudRepository<User> {
                     return;
                 }
         
-                const conflict = data.filter(user => {
+                const conflict = data.find(user => {
                     if (user.id == updatedUser.id) return false;
                     return user.email == updatedUser.email; 
-                }).pop();
+                });
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('Provided email is taken by another user.'));
@@ -231,9 +211,5 @@ export class UserRepository implements CrudRepository<User> {
         delete usr.password;
         return usr;   
     }
-
-    private isValidId(id: number) {
-        return (id && typeof id === 'number' && Number.isInteger(id) && id >= 0);
-    }
-
+    
 }
