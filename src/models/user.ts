@@ -1,6 +1,5 @@
 export class User {
 
-<<<<<<< HEAD
 	id: number;
 	username: string;
 	password: string;
