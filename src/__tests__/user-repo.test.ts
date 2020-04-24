@@ -105,20 +105,29 @@ describe('userRepo', () => {
     });
 
     test('should throw ResourceNotFoundError when getUserByUsername is given an unknown username', async () => {
+        //Arrange
         expect.assertions(1);
+        Validator.isValidStrings = jest.fn().mockReturnValue(true)
+        
+        //Act
         try {
             await sut.getInstance().getUserByUsername('nobody');
         } catch (e) {
+            //Assert
             expect(e instanceof ResourceNotFoundError).toBeTruthy();
         }
         
     });
 
     test('should throw BadRequestError when getUserByUsername is given bad data', async () => {
+        //Arrange
         expect.assertions(1);
+        Validator.isValidStrings = jest.fn().mockReturnValue(false)
         try {
+        //Act   
             await sut.getInstance().getUserByUsername('');
         } catch (e) {
+            //Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
