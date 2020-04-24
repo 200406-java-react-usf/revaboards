@@ -133,8 +133,12 @@ describe('userRepo', () => {
     });
 
     test('should return correct user (without password) when getUserByCredentials is given valid credentials', async () => {
+        //Arrange
         expect.assertions(3);
+        Validator.isValidStrings = jest.fn().mockReturnValue(true)
+        //Act
         let result = await sut.getInstance().getUserByCredentials('aanderson', 'password');
+        //Assert
         expect(result).toBeTruthy();
         expect(result.username).toBe('aanderson');
         expect(result.password).toBeUndefined();
@@ -142,27 +146,43 @@ describe('userRepo', () => {
     });
     
     test('should throw AuthenticationError when getUserByCredentials is given incorrect credentials', async () => {
+        
+        //Arrange
         expect.assertions(1);
+        Validator.isValidStrings = jest.fn().mockReturnValue(true)
+
         try {
+            //Act
             await sut.getInstance().getUserByCredentials('aanderson', 'wrong');
         } catch(e) {
+            //Assert
             expect(e instanceof AuthenticationError).toBeTruthy();
         }
     });
 
     test('should throw BadRequestError when getUserByCredentials is given bad data', async () => {
+        //Arrange
         expect.assertions(1);
+        Validator.isValidStrings = jest.fn().mockReturnValue(false)
+
         try {
+            //Act
             await sut.getInstance().getUserByCredentials('', '');
         } catch(e) {
+            //Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
 
     test('should return a user (without password) that has a new id when save is given a valid new user', async () => {
+        //Arrange
         expect.assertions(3);
+        Validator.isValidObject = jest.fn().mockReturnValue(true)
+
+        //Act
         let validMockUser = new User(0, 'test', 'test', 'test', 'test', 'test@revature.com', new Date());
         let result = await sut.getInstance().save(validMockUser);
+        //Assert
         expect(result).toBeTruthy();
         expect(result.id).toBeGreaterThan(0);
         expect(result.password).toBeUndefined();
@@ -170,22 +190,31 @@ describe('userRepo', () => {
 
     // Jeremy
     test('should invoke error callback when addNewUser is given a new user with a conflicting username', async () => {
+        //arrange
         expect.assertions(1);
+        Validator.isValidObject= jest.fn().mockReturnValue(true)
+
+        //act
         let conflictingMockUser = new User(0, 'aanderson', 'test', 'test', 'test', 'test@revature.com', new Date());
         try {
             await sut.getInstance().save(conflictingMockUser);
         } catch (e) {
+            //assert
             expect(e instanceof ResourcePersistenceError).toBeTruthy();
         }
 
     });
 
     test('should throw ResourcePersistenceError when save is given a new user with a conflicting email', async () => {
+        //Arrange
         expect.assertions(1);
+       
+        //Act
         let conflictingMockUser = new User(0, 'a', 'a', 'a', 'a', 'aanderson@revature.com', new Date());
         try {
             await sut.getInstance().save(conflictingMockUser);
         } catch (e) {
+            //Assert
             expect(e instanceof ResourcePersistenceError).toBeTruthy();
         }
 
