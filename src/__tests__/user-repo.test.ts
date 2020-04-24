@@ -7,7 +7,6 @@ import {
     ResourceNotFoundError, 
     ResourcePersistenceError 
 } from '../errors/errors';
-import validator from '../util/validator';
 
 describe('userRepo', () => {
 
@@ -26,7 +25,7 @@ describe('userRepo', () => {
             throw new Error('Failed to mock external method: isValidObject!');
         });
 
-    })
+    });
 
     test('should be a singleton', () => {
 
@@ -93,7 +92,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.assertions(3);
-        Validator.isValidStrings = jest.fn().mockReturnValue(true)
+        Validator.isValidStrings = jest.fn().mockReturnValue(true);
 
         // Act
         let result = await sut.getInstance().getUserByUsername('aanderson');
@@ -116,7 +115,7 @@ describe('userRepo', () => {
             await sut.getInstance().getUserByUsername('nobody');
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof ResourceNotFoundError).toBeTruthy();
         }
         
@@ -133,7 +132,7 @@ describe('userRepo', () => {
             await sut.getInstance().getUserByUsername('');
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
@@ -165,7 +164,7 @@ describe('userRepo', () => {
             await sut.getInstance().getUserByCredentials('aanderson', 'wrong');
         } catch(e) {
 
-        // Assert
+            // Assert
             expect(e instanceof AuthenticationError).toBeTruthy();
         }
     });
@@ -181,7 +180,7 @@ describe('userRepo', () => {
             await sut.getInstance().getUserByCredentials('', '');
         } catch(e) {
         
-        // Assert
+            // Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
@@ -215,7 +214,7 @@ describe('userRepo', () => {
             await sut.getInstance().save(conflictingMockUser);
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof ResourcePersistenceError).toBeTruthy();
         }
 
@@ -233,7 +232,7 @@ describe('userRepo', () => {
             await sut.getInstance().save(conflictingMockUser);
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof ResourcePersistenceError).toBeTruthy();
         }
 
@@ -251,7 +250,7 @@ describe('userRepo', () => {
             await sut.getInstance().save(invalidMockUser);
         } catch (e) {
         
-        // Assert
+            // Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
@@ -268,7 +267,7 @@ describe('userRepo', () => {
             await sut.getInstance().save(invalidMockUser);
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
@@ -285,7 +284,7 @@ describe('userRepo', () => {
             await sut.getInstance().save(invalidMockUser);
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
@@ -302,7 +301,7 @@ describe('userRepo', () => {
             await sut.getInstance().save(invalidMockUser);
         } catch (e) {
         
-        // Assert
+            // Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
@@ -319,7 +318,7 @@ describe('userRepo', () => {
             await sut.getInstance().save(invalidMockUser);
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
@@ -335,7 +334,7 @@ describe('userRepo', () => {
             await sut.getInstance().save(null);
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
@@ -369,7 +368,7 @@ describe('userRepo', () => {
             await sut.getInstance().update(updatedUser);
         } catch (e) {
 
-        // Assert
+            // Assert
             expect(e instanceof ResourceNotFoundError).toBeTruthy();
         }
     });
