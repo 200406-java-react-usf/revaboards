@@ -298,16 +298,16 @@ describe('userRepo', () => {
     // });
 
     // Besim
-    test('should invoke error callback when updateUser is given an invalid updated user (falsy firstName)', async () => {
+    test('should throw BadRequestError when updateUser is given an invalid updated user (falsy firstName)', async () => {
 
         let updatedUser = new User(1, 'aanderson', 'updated', '', 'updated', 'bbailey@revature.com', new Date());
 
         expect.assertions(1);
         try {
-            await sut.getInstance().save(updatedUser);
+            await sut.getInstance().update(updatedUser);
         }
-        catch(x) {
-            expect(x instanceof BadRequestError).toBeTruthy();
+        catch(e) {
+            expect(e instanceof BadRequestError).toBeTruthy();
         }
         
     });
