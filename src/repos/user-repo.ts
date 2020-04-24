@@ -1,11 +1,13 @@
 import data from '../data/user-db';
 import {CrudRepository } from './crud-repo';
 import { User } from '../models/user';
-import { 
+import Validator from '../util/validator';
+import {  
+    AuthenticationError, 
     BadRequestError, 
-    ResourceNotFoundError,
-    ResourcePersistenceError,
-    NotImplementedError
+    NotImplementedError, 
+    ResourceNotFoundError, 
+    ResourcePersistenceError
 } from '../errors/errors';
 
 
@@ -74,13 +76,13 @@ export class UserRepository implements CrudRepository<User> {
     save(newUser: User): Promise<User> {
         return new Promise<User>((resolve, reject) => {
             
-            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+            if (!Validator.isValidId(newUser.id)) {
                 reject(new BadRequestError());
             }
 
             setTimeout(() => {
                 
-                const user = {...data.find(user => user.id === id)};
+                const user = {...data.find(user => user.id === newUser.id)};
 
                 if(Object.keys(user).length === 0) {
                     reject(new ResourceNotFoundError());
@@ -109,14 +111,14 @@ export class UserRepository implements CrudRepository<User> {
     getUserByUsername(un: string): Promise<User> {
         return new Promise<User>((resolve, reject) => {
 
-            if (typeof un !== 'string' || !un) {
+            if (!Validator.isValidStrings(un)) {
                 reject(new BadRequestError());
                 return;
             }
             
             setTimeout(function() {
                 const users = {...data.filter(user => user.username === un)[0]};
-                resolve(this.removePassword(user));
+                resolve(this.removePassword(un));
             }, 250);
         });
     }
@@ -125,7 +127,7 @@ export class UserRepository implements CrudRepository<User> {
 
         return new Promise<User>((resolve, reject) => {
 
-            if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
+            if (!Validator.isValidStrings(un, pw)) {
                 reject(new BadRequestError());
                 return;
             }
@@ -139,7 +141,7 @@ export class UserRepository implements CrudRepository<User> {
                     return;
                 }
                 
-                resolve(null, user);
+                resolve(user);
         
             }, 250);
         })
@@ -172,18 +174,10 @@ export class UserRepository implements CrudRepository<User> {
         
         const addNewUser = (newUser, cb) => {
             
-            if (!newUser) {
-                cb(new errors.BadRequestError('Falsy user object provided.'));
-                return;
-            }
+        return new Promise<User>((resolve, reject) => {
         
-            let invalid = !Object.keys(newUser).every(key => {
-                if(key == 'id') return true;
-                return newUser[key]
-            });
-        
-            if (invalid) {
-                cb(new errors.BadRequestError('Invalid property values found in provided user.'));
+            if (!Validator.isValidObject(newUser, 'id')) {
+                reject(new BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
         
@@ -205,31 +199,15 @@ export class UserRepository implements CrudRepository<User> {
         
                 newUser.id = (data.length) + 1;
                 data.push(newUser);
-
-                mailWorker.emit('newRegister', newUser.email);
         
                 cb(null, newUser);
         
             });
         
-        }
-        
-        const updateUser = (updatedUser, cb) => {
-        
-            if (!updatedUser) {
-                cb(new errors.BadRequestError('Falsy user object provided.'));
-                return;
-            }
-        
-            if (!updatedUser.id) {
-                cb(new errors.BadRequestError('An id must be provided for update operations.'));
-                return;
-            }
-        
-            let invalid = !Object.values(updatedUser).every(val => val);
-        
-            if (invalid) {
-                cb(new errors.BadRequestError('Invalid property values found in provided user.'));
+        return new Promise<boolean>((resolve, reject) => {
+
+            if (!Validator.isValidObject(updatedUser) || !Validator.isValidId(updatedUser.id)) {
+                reject(new BadRequestError('Invalid user provided (invalid values found).'));
                 return;
             }
         
@@ -238,7 +216,8 @@ export class UserRepository implements CrudRepository<User> {
                 let persistedUser = data.find(user => user.id === updatedUser.id);
         
                 if (!persistedUser) {
-                    cb(new errors.ResourceNotFoundError('No user found with provided id.'))
+                    reject(new ResourceNotFoundError('No user found with provided id.'));
+                    return;
                 }
                 
                 if (persistedUser.username != updatedUser.username) {
@@ -272,6 +251,16 @@ export class UserRepository implements CrudRepository<User> {
             updateUser
         }
 
+    deleteById(id: number): Promise<boolean> {
+
+        return new Promise<boolean>((resolve, reject) => {
+            
+            if (!Validator.isValidId(id)) {
+                reject(new BadRequestError());
+            }
+
+            reject(new NotImplementedError());
+        });
     }
 
     return {

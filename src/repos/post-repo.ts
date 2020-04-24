@@ -10,6 +10,14 @@ import {
 
 export class PostRepository implements CrudRepository<Post> {
 
+    private static instance: PostRepository;
+
+    private constructor() {}
+
+    static getInstance(): PostRepository {
+        return !PostRepository.instance ? PostRepository.instance = new PostRepository() : PostRepository.instance;
+    }
+
     getAll(): Promise<Post[]> {
 
         return new Promise((resolve, reject)  => {
