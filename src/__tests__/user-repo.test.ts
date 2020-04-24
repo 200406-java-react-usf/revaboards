@@ -1,9 +1,5 @@
 import { UserRepository as sut } from '../repos/user-repo';
 import { User } from '../models/user';
-<<<<<<< HEAD
-import { BadRequestError, AuthenticationError, ResourceNotFoundError, ResourcePersistenceError } from '../errors/errors';
-import Validator from '../util/validator';
-=======
 import Validator from '../util/validator';
 import { 
     BadRequestError, 
@@ -11,23 +7,11 @@ import {
     ResourceNotFoundError, 
     ResourcePersistenceError 
 } from '../errors/errors';
->>>>>>> b04e36147c8a2da3e77443ebf8c6a1f08b9d9770
 
 describe('userRepo', () => {
 
     // Set up external functions to throw errors by default (tests will configure if needed)
     beforeEach(() => {
-<<<<<<< HEAD
-        Validator.isValidId = jest.fn().mockImplementation(() => {
-            throw new Error('Failed to mock isValidId');
-        })
-        Validator.isValidStrings = jest.fn().mockImplementation(() => {
-            throw new Error('Failed to mock isValidId');
-        })
-        Validator.isValidObject = jest.fn().mockImplementation(() => {
-            throw new Error('Failed to mock isValidId');
-        })
-=======
 
         Validator.isValidId = jest.fn().mockImplementation(() => {
             throw new Error('Failed to mock external method: isValidId!');
@@ -41,19 +25,10 @@ describe('userRepo', () => {
             throw new Error('Failed to mock external method: isValidObject!');
         });
 
->>>>>>> b04e36147c8a2da3e77443ebf8c6a1f08b9d9770
     })
 
     test('should be a singleton', () => {
 
-<<<<<<< HEAD
-        //Arrange
-        expect.assertions(1)
-        //Act
-        let reference1 = sut.getInstance();
-        let reference2 = sut.getInstance();
-        //Assert
-=======
         // Arrange
         expect.assertions(1);
 
@@ -62,23 +37,16 @@ describe('userRepo', () => {
         let reference2 = sut.getInstance();
 
         // Assert
->>>>>>> b04e36147c8a2da3e77443ebf8c6a1f08b9d9770
         expect(reference1).toEqual(reference2);
 
     });
 
     test('should return all users (without passwords) when getAll is called', async () => {
-<<<<<<< HEAD
-        //Arrange
-        expect.assertions(3);
-        //Act
-=======
         
         // Arrange
         expect.assertions(3);
 
         // Act
->>>>>>> b04e36147c8a2da3e77443ebf8c6a1f08b9d9770
         let result = await sut.getInstance().getAll();
 
         // Assert
@@ -90,14 +58,6 @@ describe('userRepo', () => {
     });
 
     test('should return correct user (without password) when getById is given a valid id', async () => {
-<<<<<<< HEAD
-        //Arrange
-        expect.assertions(3);
-        Validator.isValidId = jest.fn().mockReturnValue(true);
-        //Act
-        let result = await sut.getInstance().getById(1);
-        //Assert
-=======
         
         // Arrange
         expect.assertions(3);
@@ -107,7 +67,6 @@ describe('userRepo', () => {
         let result = await sut.getInstance().getById(1);
 
         // Assert
->>>>>>> b04e36147c8a2da3e77443ebf8c6a1f08b9d9770
         expect(result).toBeTruthy();
         expect(result.id).toBe(1);
         expect(result.password).toBeUndefined();
@@ -116,27 +75,17 @@ describe('userRepo', () => {
 
     test('should throw BadRequestError when getById is given an invalid id', async () => {
 
-<<<<<<< HEAD
-        //Arrange
-        expect.assertions(1);
-        Validator.isValidId = jest.fn().mockReturnValue(false);
-=======
         // Arrange
         expect.assertions(1);
         Validator.isValidId = jest.fn().mockReturnValue(false);
 
         // Act
->>>>>>> b04e36147c8a2da3e77443ebf8c6a1f08b9d9770
         try {
             //Act
             await sut.getInstance().getById(-1);
         } catch (e) {
-<<<<<<< HEAD
-            //Assert
-=======
 
             // Assert
->>>>>>> b04e36147c8a2da3e77443ebf8c6a1f08b9d9770
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
