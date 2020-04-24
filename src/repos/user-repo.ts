@@ -161,7 +161,9 @@ export class UserRepository implements CrudRepository<User> {
         
         return new Promise<boolean>((resolve, reject) => {
 
-            if (!Validator.isValidObject(updatedUser) || !Validator.isValidId(updatedUser.id)) {
+            let validObj = Validator.isValidObject(updatedUser);
+            let validId = Validator.isValidId(updatedUser.id);
+            if (!validObj || !validId) {
                 reject(new BadRequestError('Invalid user provided (invalid values found).'));
                 return;
             }
