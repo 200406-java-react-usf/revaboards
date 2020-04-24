@@ -1,36 +1,67 @@
 import { UserRepository as sut } from '../repos/user-repo';
 import { User } from '../models/user';
 import { BadRequestError, AuthenticationError, ResourceNotFoundError, ResourcePersistenceError } from '../errors/errors';
+import Validator from '../util/validator';
 
 describe('userRepo', () => {
 
+    // Set up external functions to throw errors by default (tests will configure if needed)
+    beforeEach(() => {
+        Validator.isValidId = jest.fn().mockImplementation(() => {
+            throw new Error('Failed to mock isValidId');
+        })
+        Validator.isValidStrings = jest.fn().mockImplementation(() => {
+            throw new Error('Failed to mock isValidId');
+        })
+        Validator.isValidObject = jest.fn().mockImplementation(() => {
+            throw new Error('Failed to mock isValidId');
+        })
+    })
+
     test('should be a singleton', () => {
+
+        //Arrange
+        expect.assertions(1)
+        //Act
         let reference1 = sut.getInstance();
         let reference2 = sut.getInstance();
+        //Assert
         expect(reference1).toEqual(reference2);
     });
 
     test('should return all users (without passwords) when getAll is called', async () => {
+        //Arrange
         expect.assertions(3);
+        //Act
         let result = await sut.getInstance().getAll();
         expect(result).toBeTruthy();
+        //Assert
         expect(result.length).toBeGreaterThan(0);
         expect(result[0].password).toBeUndefined();
     });
 
     test('should return correct user (without password) when getById is given a valid id', async () => {
+        //Arrange
         expect.assertions(3);
+        Validator.isValidId = jest.fn().mockReturnValue(true);
+        //Act
         let result = await sut.getInstance().getById(1);
+        //Assert
         expect(result).toBeTruthy();
         expect(result.id).toBe(1);
         expect(result.password).toBeUndefined();
     });
 
     test('should throw BadRequestError when getById is given an invalid id', async () => {
+
+        //Arrange
         expect.assertions(1);
+        Validator.isValidId = jest.fn().mockReturnValue(false);
         try {
+            //Act
             await sut.getInstance().getById(-1);
         } catch (e) {
+            //Assert
             expect(e instanceof BadRequestError).toBeTruthy();
         }
     });
