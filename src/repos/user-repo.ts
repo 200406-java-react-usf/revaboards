@@ -1,21 +1,19 @@
 import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
-import { MailWorker } from '../util/mail-worker';
-
-import { 
+import {  
+    AuthenticationError, 
     BadRequestError, 
+    NotImplementedError, 
     ResourceNotFoundError, 
-    ResourcePersistenceError ,
-    AuthenticationError
-}  from '../errors/errors';
-
+    ResourcePersistenceError
+} from '../errors/errors';
 
 export class UserRepository implements CrudRepository<User> {
 
     private static instance: UserRepository;
 
-    private constructor() { }
+    private constructor() {}
 
     static getInstance() {
         return !UserRepository.instance ? UserRepository.instance = new UserRepository() : UserRepository.instance;
@@ -23,10 +21,10 @@ export class UserRepository implements CrudRepository<User> {
 
     getAll(): Promise<User[]> {
 
-        return new Promise((resolve, reject) => {
+        return new Promise<User[]>((resolve, reject) => {
 
             setTimeout(() => {
-                
+            
                 let users = [];
     
                 for (let user of data) {
@@ -41,49 +39,48 @@ export class UserRepository implements CrudRepository<User> {
                 resolve(users.map(this.removePassword));
         
             }, 250);
+
         });
+    
     }
 
     getById(id: number): Promise<User> {
-
-        return new Promise((resolve, reject) => {
-
+        return new Promise<User>((resolve, reject) => {
+            
             if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
                 reject(new BadRequestError());
-                return;
             }
-        
+
             setTimeout(() => {
-        
-                const user = {...data.filter(user => user.id === id)[0]};
                 
-                console.log(user);
-                if (Object.keys(user).length === 0) {
+                const user = {...data.find(user => user.id === id)};
+
+                if(Object.keys(user).length === 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
-        
+
                 resolve(this.removePassword(user));
-        
+
             }, 250);
+
         });
-    
     }
-    
+
     getUserByUsername(un: string): Promise<User> {
 
-        return new Promise((resolve, reject) => {
-    
+        return new Promise<User>((resolve, reject) => {
+
             if (typeof un !== 'string' || !un) {
                 reject(new BadRequestError());
                 return;
             }
-        
+           
             setTimeout(() => {
         
                 const user = {...data.filter(user => user.username === un)[0]};
                 
-                if (Object.keys(user).length === 0) {
+                if (Object.keys(user).length == 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
@@ -91,13 +88,16 @@ export class UserRepository implements CrudRepository<User> {
                 resolve(this.removePassword(user));
         
             }, 250);
-        });
-    }
-    
-    getUserByCredentials(un: string, pw: string): Promise<User> {
 
-        return new Promise((resolve, reject) => {
+        });
+        
     
+    }
+
+    getUserByCredentials(un: string, pw: string) {
+        
+        return new Promise<User>((resolve, reject) => {
+
             if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
                 reject(new BadRequestError());
                 return;
@@ -105,7 +105,7 @@ export class UserRepository implements CrudRepository<User> {
         
             setTimeout(() => {
         
-                const user = {...data.filter(user => user.username === un && user.password === pw)[0]};
+                const user = {...data.filter(user => user.username === un && user.password === pw).pop()!};
                 
                 if (Object.keys(user).length === 0) {
                     reject(new AuthenticationError('Bad credentials provided.'));
@@ -115,23 +115,23 @@ export class UserRepository implements CrudRepository<User> {
                 resolve(this.removePassword(user));
         
             }, 250);
-        });    
-    }
+
+        });
     
+    }
+
     save(newUser: User): Promise<User> {
+            
+        return new Promise<User>((resolve, reject) => {
 
-        let newUsr = {...newUser};
-        
-        return new Promise((resolve, reject) => {
-
-            if (!newUsr) {
+            if (!newUser) {
                 reject(new BadRequestError('Falsy user object provided.'));
                 return;
             }
         
-            let invalid = !Object.keys(newUsr).every(key => {
+            let invalid = !Object.keys(newUser).every(key => {
                 if(key == 'id') return true;
-                return newUsr[key];
+                return newUser[key];
             });
         
             if (invalid) {
@@ -141,51 +141,47 @@ export class UserRepository implements CrudRepository<User> {
         
             setTimeout(() => {
         
-                let conflict = data.filter(user => user.username == newUsr.username)[0];
+                let conflict = data.filter(user => user.username == newUser.username).pop();
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('The provided username is already taken.'));
                     return;
                 }
         
-                conflict = data.filter(user => user.email == newUsr.email)[0];
+                conflict = data.filter(user => user.email == newUser.email).pop();
         
                 if (conflict) {
                     reject(new ResourcePersistenceError('The provided email is already taken.'));
                     return;
                 }
         
-                newUsr.id = (data.length) + 1;
-                data.push(newUsr);
-
-                MailWorker.getInstance().emit('newRegister', newUsr.email);
+                newUser.id = (data.length) + 1;
+                data.push(newUser);
         
-                resolve(this.removePassword(newUsr));
+                resolve(this.removePassword(newUser));
         
             });
 
         });
-        
     
     }
-    
+
     update(updatedUser: User): Promise<boolean> {
-    
-        return new Promise((resolve, reject) => {
+        
+        return new Promise<boolean>((resolve, reject) => {
 
             if (!updatedUser) {
                 reject(new BadRequestError('Falsy user object provided.'));
                 return;
             }
-        
-            if (!updatedUser.id) {
-                reject(new BadRequestError('An id must be provided for update operations.'));
-                return;
+
+            let isValidId = this.isValidId(updatedUser.id);
+            if(!isValidId) {
+                reject(new BadRequestError('A valid id must be provided for update operations.'));
             }
         
-            let invalid = !Object.values(updatedUser).every(val => val);
-        
-            if (invalid) {
+            let isValidUser = Object.values(updatedUser).every(val => val);
+            if (!isValidUser) {
                 reject(new BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
@@ -196,6 +192,7 @@ export class UserRepository implements CrudRepository<User> {
         
                 if (!persistedUser) {
                     reject(new ResourceNotFoundError('No user found with provided id.'));
+                    return;
                 }
                 
                 if (persistedUser.username != updatedUser.username) {
@@ -214,6 +211,7 @@ export class UserRepository implements CrudRepository<User> {
                 }
     
                 persistedUser = updatedUser;
+    
                 resolve(true);
         
             });
@@ -223,15 +221,19 @@ export class UserRepository implements CrudRepository<User> {
     }
 
     deleteById(id: number): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            reject('Not implemented');
+        return new Promise<boolean>((resolve, reject) => {
+            reject(new NotImplementedError());
         });
     }
 
-    private removePassword(user) {
+    private removePassword(user: User): User {
         let usr = {...user};
         delete usr.password;
-        return usr;
+        return usr;   
+    }
+
+    private isValidId(id: number) {
+        return (id && typeof id === 'number' && Number.isInteger(id) && id >= 0);
     }
 
 }

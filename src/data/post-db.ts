@@ -1,4 +1,9 @@
 import { Post } from '../models/post';
+<<<<<<< HEAD:src/data/post-db.ts
+=======
+
+// challenge: replace this with id generator function
+>>>>>>> a991118bdb9ba1189a9563985f49c2c5dbda4d76:src/data/post-db.ts
 let id = 1;
 
 export default [

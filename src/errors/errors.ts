@@ -3,45 +3,58 @@ class ApplicationError {
     message: string;
     reason: string;
 
-    constructor (reason?) {
+    constructor(rsn?: string) {
         this.message = 'An unexpected error occurred.';
-        reason ? (this.reason = reason) : this.reason = 'Unspecified reason.';
+        rsn ? (this.reason = rsn) : this.reason = 'Unspecified reason.';
     }
 
-} 
+    setMessage(message: string) {
+        this.message = message;
+    }
+
+}
 
 class ResourcePersistenceError extends ApplicationError {
 
-    constructor(reason?) {
+    constructor(reason?: string) {
         super(reason);
-        super.message = 'The resource was not persisted.';
+        super.setMessage('The resource was not persisted.');
     }
-        
+    
 }
 
 class ResourceNotFoundError extends ApplicationError {
 
-    constructor(reason?) {
+    constructor(reason?: string) {
         super(reason);
-        super.message = 'No resource found using provided criteria.';
+        super.setMessage('No resource found using provided criteria.');
     }
-
+    
 }
 
 class BadRequestError extends ApplicationError {
 
-    constructor(reason?) {
+    constructor(reason?: string) {
         super(reason);
-        super.message = 'Invalid parameters provided.';
+        super.setMessage('Invalid parameters provided.');
     }
 
 }
 
 class AuthenticationError extends ApplicationError {
 
-    constructor(reason?) {
+    constructor(reason?: string) {
         super(reason);
-        super.message = 'Authentication failed.';
+        super.setMessage('Authentication failed.');
+    }
+
+}
+
+class NotImplementedError extends ApplicationError {
+
+    constructor(reason?: string) {
+        super(reason);
+        super.setMessage('No implementation yet!');
     }
 
 }
@@ -50,5 +63,6 @@ export {
     ResourceNotFoundError,
     ResourcePersistenceError,
     BadRequestError,
-    AuthenticationError
+    AuthenticationError,
+    NotImplementedError
 };
