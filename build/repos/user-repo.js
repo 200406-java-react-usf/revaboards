@@ -15,7 +15,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var user_db_1 = __importDefault(require("../data/user-db"));
-//import mailWorker from'../util/mail-worker';
 var errors_1 = require("../errors/errors");
 var UserRepository = /** @class */ (function () {
     function UserRepository() {
@@ -120,23 +119,23 @@ var UserRepository = /** @class */ (function () {
                 }
                 newUser.id = (user_db_1.default.length) + 1;
                 user_db_1.default.push(newUser);
-                // mailWorker.emit('newRegister', newUser.email);
                 resolve(_this.removePassword(newUser));
             });
         });
     };
     UserRepository.prototype.update = function (updatedUser) {
+        var _this = this;
         return new Promise(function (resolve, reject) {
             if (!updatedUser) {
                 reject(new errors_1.BadRequestError('Falsy user object provided.'));
                 return;
             }
-            if (!updatedUser.id) {
-                reject(new errors_1.BadRequestError('An id must be provided for update operations.'));
-                return;
+            var isValidId = _this.isValidId(updatedUser.id);
+            if (!isValidId) {
+                reject(new errors_1.BadRequestError('A valid id must be provided for update operations.'));
             }
-            var invalid = !Object.values(updatedUser).every(function (val) { return val; });
-            if (invalid) {
+            var isValidUser = Object.values(updatedUser).every(function (val) { return val; });
+            if (!isValidUser) {
                 reject(new errors_1.BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
@@ -144,6 +143,7 @@ var UserRepository = /** @class */ (function () {
                 var persistedUser = user_db_1.default.find(function (user) { return user.id === updatedUser.id; });
                 if (!persistedUser) {
                     reject(new errors_1.ResourceNotFoundError('No user found with provided id.'));
+                    return;
                 }
                 if (persistedUser.username != updatedUser.username) {
                     reject(new errors_1.ResourcePersistenceError('Usernames cannot be updated.'));
@@ -172,6 +172,9 @@ var UserRepository = /** @class */ (function () {
         var usr = __assign({}, user);
         delete usr.password;
         return usr;
+    };
+    UserRepository.prototype.isValidId = function (id) {
+        return (id && typeof id === 'number' && Number.isInteger(id) && id >= 0);
     };
     return UserRepository;
 }());

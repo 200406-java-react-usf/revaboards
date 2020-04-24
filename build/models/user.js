@@ -9,7 +9,6 @@ var User = /** @class */ (function () {
         this.lastName = ln;
         this.email = email;
         this.dob = dob;
-        this.age = Math.abs(new Date(Date.now() - this.dob.getTime()).getUTCFullYear() - 1970);
     }
     return User;
 }());
