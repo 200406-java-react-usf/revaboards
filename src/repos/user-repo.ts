@@ -2,14 +2,8 @@
 import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
-<<<<<<< HEAD
-import mailWorker from'../util/mail-worker';
-import { 
-    ResourceNotFoundError, 
-=======
 import {  
     AuthenticationError, 
->>>>>>> daf77b61dba2347995fae4e5003f00e0aa703e03
     BadRequestError, 
     NotImplementedError, 
     ResourceNotFoundError, 
@@ -239,12 +233,8 @@ export class UserRepository implements CrudRepository<User> {
         return usr;   
     }
 
-<<<<<<< HEAD
-}
-=======
     private isValidId(id: number) {
         return (id && typeof id === 'number' && Number.isInteger(id) && id >= 0);
     }
 
 }
->>>>>>> daf77b61dba2347995fae4e5003f00e0aa703e03
