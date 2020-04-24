@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express from 'express';
 import * as bodyparser from 'body-parser';
 
 import { UserRepository } from './repos/user-repo';
