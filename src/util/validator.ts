@@ -3,7 +3,8 @@ const isValidId = (id: number): boolean => {
 }
 
 const isValidObject = (entity: Object, ...nullableProps: string[]): boolean => {
-    return Object.keys(entity).every(key => {
+
+    return entity && Object.keys(entity).every(key => {
         if (nullableProps.includes(key)) return true;
         return entity[key];
     })
