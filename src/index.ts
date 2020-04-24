@@ -1,10 +1,17 @@
-import { PostRepository } from './repos/post-repo';
-import { UserRepository } from './repos/user-repo';
+import express from 'express';
+import bodyparser from 'body-parser';
 
-(async function() {
+import { UserRouter } from './routers/user-router';
+import { PostRouter } from './routers/post-router';
 
-    let userRepo = UserRepository.getInstance();
-    
-    console.log(await userRepo.getAll());
+const app = express();
 
-})();
+app.use('/', bodyparser.json());
+
+app.use('/users', UserRouter);
+app.use('/posts', PostRouter);
+
+
+app.listen(8080, () => {
+    console.log(`Application running and listening at: http://localhost:8080`);
+});
