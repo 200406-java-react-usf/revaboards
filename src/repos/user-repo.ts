@@ -2,7 +2,8 @@ import data from '../data/user-db';
 import { ResourceNotFoundError, BadRequestError, ResourcePersistenceError, AuthenticationError, NotImplementedError } from '../errors/errors';
 import { User } from '../models/user';
 import { CrudRepository } from '../repos/crud-repo';
-import mailWorker from '../util/mail-worker';
+import Validator from '../util/validator';
+import validator from '../util/validator';
 
 export class UserRepository implements CrudRepository<User>{
 
@@ -47,7 +48,7 @@ export class UserRepository implements CrudRepository<User>{
 
         return new Promise<User>((resolve,reject) => {
 
-            if (typeof id !== 'number' || !Number.isInteger(id) || id <= 0) {
+            if (!Validator.isValidId(id)) {
                 reject(new BadRequestError());
                 return;
             }
@@ -74,7 +75,7 @@ export class UserRepository implements CrudRepository<User>{
 
         return new Promise<User>((resolve, reject) => {
 
-            if (typeof un !== 'string' || !un) {
+            if (!Validator.isValidString(un)) {
                 reject(new BadRequestError());
                 return;
             }
@@ -101,7 +102,7 @@ export class UserRepository implements CrudRepository<User>{
 
         return new Promise<User>((resolve, reject) => {
 
-            if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
+            if (!Validator.isValidString(un,pw)) {
                 reject(new BadRequestError());
                 return;
             }
@@ -127,17 +128,7 @@ export class UserRepository implements CrudRepository<User>{
             
         return new Promise<User> ((resolve,reject) => {
 
-            if (!newUser) {
-                reject(new BadRequestError());
-                return;
-            }
-
-            let invalid = !Object.keys(newUser).every((key) => {
-                if(key == 'id') return true;
-                return newUser[key];  
-            });
-        
-            if (invalid) {
+            if (!Validator.isValidObject(newUser, 'id')) {
                 reject(new BadRequestError());
                 return;
             }
@@ -161,7 +152,7 @@ export class UserRepository implements CrudRepository<User>{
                 newUser.id = (data.length) + 1;
                 data.push(newUser);
         
-                resolve(newUser);
+                resolve(this.removePassword(newUser));
         
             });
 
@@ -175,19 +166,7 @@ export class UserRepository implements CrudRepository<User>{
 
         return new Promise<boolean> ((resolve,reject) => {
 
-            if (!updatedUser) {
-                reject(new BadRequestError());
-                return;
-            }
-        
-            if (!updatedUser.id) {
-                reject(new BadRequestError());
-                return;
-            }
-        
-            let invalid = !Object.keys(updatedUser).every(key => key /*updatedUser[key]*/);
-        
-            if (invalid) {
+            if (!Validator.isValidObject(updatedUser,'id') || !Validator.isValidId(updatedUser.id)) {
                 reject(new BadRequestError());
                 return;
             }
@@ -228,6 +207,11 @@ export class UserRepository implements CrudRepository<User>{
     deleteById(id: number): Promise<boolean> {
 
         return new Promise<boolean>((resolve, reject) => {
+
+            if (!Validator.isValidId(id)) {
+                reject(new BadRequestError());
+                return;
+            }
 
             return new Promise<boolean>((resolve,reject) => {
                 reject(new NotImplementedError());
