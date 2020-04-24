@@ -257,7 +257,7 @@ describe('userRepo', () => {
     // });
     
     //Juan
-    test('should invoke error callback when updateUser is given an updated user with a conflicting email', async () => {
+    test('should throw ResourcePersistenceError when updateUser is given an updated user with a conflicting email', async () => {
 
         let updatedUser = new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'bbailey@revature.com', new Date('01/01/1995'));
         expect.assertions(1);
