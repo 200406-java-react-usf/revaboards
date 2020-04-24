@@ -3,7 +3,7 @@ import { ResourceNotFoundError, BadRequestError, ResourcePersistenceError, Authe
 import { User } from '../models/user';
 import { CrudRepository } from '../repos/crud-repo';
 import Validator from '../util/validator';
-import validator from '../util/validator';
+
 
 export class UserRepository implements CrudRepository<User>{
 
