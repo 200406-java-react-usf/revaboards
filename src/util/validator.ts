@@ -1,6 +1,6 @@
 const isValidId = (id: number): boolean => {
     return (id && typeof id === 'number' && Number.isInteger(id) && id > 0);
-}
+};
 
 const isValidStrings = (...strs: string[]): boolean => {
    
@@ -12,7 +12,7 @@ const isValidStrings = (...strs: string[]): boolean => {
 
     return true;
 
-}
+};
 
 const isValidObject = (obj: Object, ...nullableProps: string[]) => {
     
@@ -21,10 +21,10 @@ const isValidObject = (obj: Object, ...nullableProps: string[]) => {
         return obj[key];
     });
 
-}
+};
 
 export default {
     isValidId,
     isValidStrings,
     isValidObject
-}
+};

@@ -25,7 +25,7 @@ describe('userRepo', () => {
             throw new Error('Failed to mock external method: isValidObject!');
         });
 
-    })
+    });
 
     test('should be a singleton', () => {
 
@@ -92,7 +92,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.assertions(3);
-        Validator.isValidStrings = jest.fn().mockReturnValue(true)
+        Validator.isValidStrings = jest.fn().mockReturnValue(true);
 
         // Act
         let result = await sut.getInstance().getUserByUsername('aanderson');

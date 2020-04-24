@@ -18,4 +18,4 @@ export class User {
         this.dob = dob;
     }
 
-};
+}
