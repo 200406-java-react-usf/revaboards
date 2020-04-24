@@ -1,14 +1,12 @@
 import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
-import mailWorker from'../util/mail-worker';
-
-import { 
-    ResourceNotFoundError, 
+import {  
+    AuthenticationError, 
     BadRequestError, 
-    AuthenticationError,
-    ResourcePersistenceError,
-    NotImplementedError
+    NotImplementedError, 
+    ResourceNotFoundError, 
+    ResourcePersistenceError
 } from '../errors/errors';
 
 export class UserRepository implements CrudRepository<User> {
@@ -159,8 +157,6 @@ export class UserRepository implements CrudRepository<User> {
         
                 newUser.id = (data.length) + 1;
                 data.push(newUser);
-    
-                // mailWorker.emit('newRegister', newUser.email);
         
                 resolve(this.removePassword(newUser));
         
@@ -178,15 +174,14 @@ export class UserRepository implements CrudRepository<User> {
                 reject(new BadRequestError('Falsy user object provided.'));
                 return;
             }
-        
-            if (!updatedUser.id) {
-                reject(new BadRequestError('An id must be provided for update operations.'));
-                return;
+
+            let isValidId = this.isValidId(updatedUser.id);
+            if(!isValidId) {
+                reject(new BadRequestError('A valid id must be provided for update operations.'));
             }
         
-            let invalid = !Object.values(updatedUser).every(val => val);
-        
-            if (invalid) {
+            let isValidUser = Object.values(updatedUser).every(val => val);
+            if (!isValidUser) {
                 reject(new BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
@@ -197,6 +192,7 @@ export class UserRepository implements CrudRepository<User> {
         
                 if (!persistedUser) {
                     reject(new ResourceNotFoundError('No user found with provided id.'));
+                    return;
                 }
                 
                 if (persistedUser.username != updatedUser.username) {
@@ -234,6 +230,10 @@ export class UserRepository implements CrudRepository<User> {
         let usr = {...user};
         delete usr.password;
         return usr;   
+    }
+
+    private isValidId(id: number) {
+        return (id && typeof id === 'number' && Number.isInteger(id) && id >= 0);
     }
 
 }
