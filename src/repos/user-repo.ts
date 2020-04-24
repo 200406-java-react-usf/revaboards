@@ -193,6 +193,7 @@ export class UserRepository implements CrudRepository<User> {
                 persistedUser = updatedUser;
     
                 resolve(true);
+                return;
         
             });
 
