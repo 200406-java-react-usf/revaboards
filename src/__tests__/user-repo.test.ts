@@ -159,7 +159,6 @@ describe('userRepo', () => {
         expect(result.password).toBeUndefined();
     });
 
-    // Jeremy
     test('should invoke error callback when addNewUser is given a new user with a conflicting username', async () => {
         expect.assertions(1);
         let conflictingMockUser = new User(0, 'aanderson', 'test', 'test', 'test', 'test@revature.com', new Date());
@@ -267,13 +266,15 @@ describe('userRepo', () => {
         }
     });
 
-    // Scott
     test('should throw error when save (adding new user) is given an invalid new user (falsy dob)', async () => { 
         expect.assertions(1);
         try {
             await sut.getInstance().save(new User(0, 'a', 'a', 'a', 'a', 'a@revature.com', null));
         } catch (e) {
             console.log(e);
+        }
+    });
+    
     test('should throw BadRequestError when update is given an updated user with an invalid id (negative)', async () => {
         expect.assertions(1);
         let updatedUser = new User(-1, 'updated', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
@@ -284,56 +285,52 @@ describe('userRepo', () => {
         }
     });
 
-    // Kaneisha
-    // test('should invoke error callback when when addNewUser is given a falsy user', done => {
-    //     expect.assertions(2);
-    //     sut.getInstance().addNewUser(null, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+    test('should invoke error callback when when addNewUser is given a falsy user', done => {
+        expect.assertions(2);
+        sut.getInstance().addNewUser(null, (err, result) => {
+            expect(err).toBeTruthy();
+            expect(result).toBeFalsy();
+            done();
+        });
+    });
 
+    test('should update user within the datasource when updateUser is given a valid updated user', done => {
 
-    // Jose
-    // test('should update user within the datasource when updateUser is given a valid updated user', done => {
+        let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
 
-    //     let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
+        expect.assertions(2);
+        sut.getInstance().updateUser(updatedUser, (err, result) => {
+            expect(err).toBeFalsy();
+            expect(result).toBeTruthy();
+            done();
+        });
 
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeFalsy();
-    //         expect(result).toBeTruthy();
-    //         done();
-    //     });
+    });
 
-    // });
+    test('should invoke error callback when updateUser is given an updated user with an updated username', done => {
 
-    // Kennedy
-    // test('should invoke error callback when updateUser is given an updated user with an updated username', done => {
+        let updatedUser = new User(1, 'updated', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
 
-    //     let updatedUser = new User(1, 'updated', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
+        expect.assertions(2);
+        sut.getInstance().updateUser(updatedUser, (err, result) => {
+            expect(err).toBeTruthy();
+            expect(result).toBeFalsy();
+            done();
+        });
+    });
 
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+    test('should invoke error callback when updateUser is given an updated user with a conflicting username', done => {
 
-    // Neftaly
-    // test('should invoke error callback when updateUser is given an updated user with a conflicting username', done => {
+        let updatedUser = new User(1, 'bbailey', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
 
-    //     let updatedUser = new User(1, 'bbailey', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
+        expect.assertions(2);
+        sut.getInstance().updateUser(updatedUser, (err, result) => {
+            expect(err).toBeTruthy();
+            expect(result).toBeFalsy();
+            done();
+        });
+    });
 
-    //     expect.assertions(2);
-    //     sut.getInstance().updateUser(updatedUser, (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
     test('should throw ResourcePersistenceError when update is given an updated user with an updated username', async () => {
         expect.assertions(1);
         let updatedUser = new User(1, 'updated', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
