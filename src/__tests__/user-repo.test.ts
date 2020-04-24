@@ -73,14 +73,16 @@ describe('userRepo', () => {
     });
     
     // Damola
-    // test('should invoke error callback when getUserByCredentials is given invalid credentials', done => {
-    //     expect.assertions(2);
-    //     sut.getInstance().getUserByCredentials('aanderson', 'wrong', (err, result) => {
-    //         expect(err).toBeTruthy();
-    //         expect(result).toBeFalsy();
-    //         done();
-    //     });
-    // });
+     test('should invoke error callback when getUserByCredentials is given invalid credentials', async () => {
+         expect.assertions(1);
+         try {
+             await sut.getInstance().getUserByCredentials('!@#$%^','&*()_+~');
+         } catch (e) {
+             expect(e instanceof AuthenticationError).toBeTruthy();
+             //expect(result).toBeFalsy();
+             //one();
+         };
+     });
 
     // Andrew
     // test('should invoke error callback when getUserByCredentials is given bad data', done => {
