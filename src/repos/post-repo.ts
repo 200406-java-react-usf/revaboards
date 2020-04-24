@@ -11,9 +11,9 @@ export class PostRepository implements CrudRepository<Post> {
 
     private static instance: PostRepository;
 
-    private constructor() { }
+    private constructor() {}
 
-    static getInstance() {
+    static getInstance(): PostRepository {
         return !PostRepository.instance ? PostRepository.instance = new PostRepository() : PostRepository.instance;
     }
 
