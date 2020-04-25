@@ -11,15 +11,21 @@
   "author": "Wezley Singleton",
   "license": "ISC",
   "dependencies": {
+<<<<<<< HEAD
+=======
+    "body-parser": "^1.19.0",
+>>>>>>> 580f5ca1ac0d37fcbc53370377521200a32b9130
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.6",
     "@types/jest": "^25.2.1",
     "@types/node": "^12.12.37",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "eslint": "^6.8.0",
     "jest": "^25.3.0",
+    "nodemon": "^2.0.3",
     "ts-jest": "^25.4.0",
     "typescript": "^3.7.5"
   }
