@@ -376,8 +376,7 @@ describe('userRepo', () => {
         // Arrange
         expect.assertions(1);
         let updatedUser = new User(3.14, 'updated', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
-        Validator.isValidId = jest.fn().mockReturnValue(false);
-        Validator.isValidObject = jest.fn().mockReturnValue(true);
+        Validator.isValidObject = jest.fn().mockReturnValue(false);
 
         // Act
         try {
