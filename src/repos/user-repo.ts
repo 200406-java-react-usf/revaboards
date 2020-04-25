@@ -1,7 +1,11 @@
 import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
-import Validator from '../util/validator';
+import { 
+    isValidId, 
+    isValidObject, 
+    isValidStrings 
+} from '../util/validator';
 import {  
     AuthenticationError, 
     BadRequestError, 
@@ -48,7 +52,7 @@ export class UserRepository implements CrudRepository<User> {
     getById(id: number): Promise<User> {
         return new Promise<User>((resolve, reject) => {
             
-            if (!Validator.isValidId(id)) {
+            if (!isValidId(id)) {
                 reject(new BadRequestError());
             }
 
@@ -72,7 +76,7 @@ export class UserRepository implements CrudRepository<User> {
 
         return new Promise<User>((resolve, reject) => {
 
-            if (!Validator.isValidStrings(un)) {
+            if (!isValidStrings(un)) {
                 reject(new BadRequestError());
                 return;
             }
@@ -99,7 +103,7 @@ export class UserRepository implements CrudRepository<User> {
         
         return new Promise<User>((resolve, reject) => {
 
-            if (!Validator.isValidStrings(un, pw)) {
+            if (!isValidStrings(un, pw)) {
                 reject(new BadRequestError());
                 return;
             }
@@ -125,7 +129,7 @@ export class UserRepository implements CrudRepository<User> {
             
         return new Promise<User>((resolve, reject) => {
         
-            if (!Validator.isValidObject(newUser, 'id')) {
+            if (!isValidObject(newUser, 'id')) {
                 reject(new BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
@@ -161,9 +165,9 @@ export class UserRepository implements CrudRepository<User> {
         
         return new Promise<boolean>((resolve, reject) => {
 
-            let validObj = Validator.isValidObject(updatedUser);
-            let validId = Validator.isValidId(updatedUser.id);
-            if (!validObj || !validId) {
+            let valid = isValidObject(updatedUser);
+            valid = isValidId(updatedUser.id);
+            if (!valid) {
                 reject(new BadRequestError('Invalid user provided (invalid values found).'));
                 return;
             }
