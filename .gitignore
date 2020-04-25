@@ -1,8 +1,4 @@
 node_modules/
 package-lock.json
-<<<<<<< HEAD
-build/
-=======
 build/
 coverage/
->>>>>>> a991118bdb9ba1189a9563985f49c2c5dbda4d76

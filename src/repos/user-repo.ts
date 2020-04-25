@@ -124,15 +124,9 @@ export class UserRepository implements CrudRepository<User> {
     save(newUser: User): Promise<User> {
             
         return new Promise<User>((resolve, reject) => {
-<<<<<<< HEAD
-
-            if (!Validator.isValidObject(newUser, 'id')) {
-                reject(new BadRequestError('Invalid user object provided.'));
-=======
         
             if (!Validator.isValidObject(newUser, 'id')) {
                 reject(new BadRequestError('Invalid property values found in provided user.'));
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
                 return;
             }
         
@@ -168,11 +162,7 @@ export class UserRepository implements CrudRepository<User> {
         return new Promise<boolean>((resolve, reject) => {
 
             if (!Validator.isValidObject(updatedUser)) {
-<<<<<<< HEAD
-                reject(new BadRequestError('Invalid user object provided (falsy values found).'));
-=======
                 reject(new BadRequestError('Invalid user provided (invalid values found).'));
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
                 return;
             }
         
@@ -227,9 +217,4 @@ export class UserRepository implements CrudRepository<User> {
         delete usr.password;
         return usr;   
     }
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
 }

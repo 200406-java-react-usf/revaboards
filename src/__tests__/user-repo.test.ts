@@ -14,16 +14,6 @@ describe('userRepo', () => {
     beforeEach(() => {
 
         Validator.isValidId = jest.fn().mockImplementation(() => {
-<<<<<<< HEAD
-            throw new Error('Failed to mock!');
-        });
-
-        Validator.isValidObject = jest.fn().mockImplementation(() => {
-            throw new Error('Failed to mock!');
-        });
-
-    })
-=======
             throw new Error('Failed to mock external method: isValidId!');
         });
 
@@ -36,7 +26,6 @@ describe('userRepo', () => {
         });
 
     });
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
 
     test('should be a singleton', () => {
         let reference1 = sut.getInstance();
@@ -95,10 +84,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.assertions(3);
-<<<<<<< HEAD
-=======
         Validator.isValidStrings = jest.fn().mockReturnValue(true);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
 
         // Act
         let result = await sut.getInstance().getUserByUsername('aanderson');
@@ -114,10 +100,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.assertions(1);
-<<<<<<< HEAD
-=======
         Validator.isValidStrings = jest.fn().mockReturnValue(true);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
 
         // Act
         try {
@@ -134,10 +117,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.assertions(1);
-<<<<<<< HEAD
-=======
         Validator.isValidStrings = jest.fn().mockReturnValue(false);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
 
         // Act
         try {
@@ -154,10 +134,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.assertions(3);
-<<<<<<< HEAD
-=======
         Validator.isValidStrings = jest.fn().mockReturnValue(true);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
 
         // Act
         let result = await sut.getInstance().getUserByCredentials('aanderson', 'password');
@@ -173,10 +150,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.assertions(1);
-<<<<<<< HEAD
-=======
         Validator.isValidStrings = jest.fn().mockReturnValue(true);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
         
         // Act
         try {
@@ -193,10 +167,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.assertions(1);
-<<<<<<< HEAD
-=======
         Validator.isValidStrings = jest.fn().mockReturnValue(false);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
 
         // Act
         try {
@@ -370,10 +341,7 @@ describe('userRepo', () => {
         // Arrange
         expect.assertions(1);
         let updatedUser = new User(1, 'aanderson', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
-<<<<<<< HEAD
-=======
         Validator.isValidId = jest.fn().mockReturnValue(true);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
         Validator.isValidObject = jest.fn().mockReturnValue(true);
 
         // Act
@@ -389,21 +357,14 @@ describe('userRepo', () => {
         // Arrange
         expect.assertions(1);
         let updatedUser = new User(999999, 'updated', 'updated', 'updated', 'updated', 'updated@revature.com', new Date());
-<<<<<<< HEAD
-=======
         Validator.isValidId = jest.fn().mockReturnValue(true);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
         Validator.isValidObject = jest.fn().mockReturnValue(true);
 
         // Act
         try {
             await sut.getInstance().update(updatedUser);
         } catch (e) {
-<<<<<<< HEAD
-
-=======
             console.log(e);
->>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
             // Assert
             expect(e instanceof ResourceNotFoundError).toBeTruthy();
         }
