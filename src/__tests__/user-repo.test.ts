@@ -25,7 +25,7 @@ describe('userRepo', () => {
             throw new Error('Failed to mock external method: isValidObject!');
         });
 
-    })
+    });
 
     test('should be a singleton', () => {
         let reference1 = sut.getInstance();
