@@ -15,6 +15,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var user_db_1 = __importDefault(require("../data/user-db"));
+var validator_1 = __importDefault(require("../util/validator"));
 var errors_1 = require("../errors/errors");
 var UserRepository = /** @class */ (function () {
     function UserRepository() {
@@ -42,7 +43,7 @@ var UserRepository = /** @class */ (function () {
     UserRepository.prototype.getById = function (id) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (typeof id !== 'number' || !id || id <= 0) {
+            if (!validator_1.default.isValidId(id)) {
                 reject(new errors_1.BadRequestError());
                 return;
             }
@@ -59,7 +60,7 @@ var UserRepository = /** @class */ (function () {
     UserRepository.prototype.getUserByUsername = function (un) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (typeof un !== 'string' || !un) {
+            if (!validator_1.default.isValidStrings(un)) {
                 reject(new errors_1.BadRequestError());
                 return;
             }
@@ -76,7 +77,7 @@ var UserRepository = /** @class */ (function () {
     UserRepository.prototype.getUserByCredentials = function (un, pw) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (!un || !pw || typeof un !== 'string' || typeof pw !== 'string') {
+            if (!validator_1.default.isValidStrings(un, pw)) {
                 reject(new errors_1.BadRequestError());
                 return;
             }
@@ -93,16 +94,7 @@ var UserRepository = /** @class */ (function () {
     UserRepository.prototype.save = function (newUser) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            if (!newUser) {
-                reject(new errors_1.BadRequestError('Falsy user object provided.'));
-                return;
-            }
-            var invalid = !Object.keys(newUser).every(function (key) {
-                if (key == 'id')
-                    return true;
-                return newUser[key];
-            });
-            if (invalid) {
+            if (!validator_1.default.isValidObject(newUser, 'id')) {
                 reject(new errors_1.BadRequestError('Invalid property values found in provided user.'));
                 return;
             }
@@ -124,19 +116,9 @@ var UserRepository = /** @class */ (function () {
         });
     };
     UserRepository.prototype.update = function (updatedUser) {
-        var _this = this;
         return new Promise(function (resolve, reject) {
-            if (!updatedUser) {
-                reject(new errors_1.BadRequestError('Falsy user object provided.'));
-                return;
-            }
-            var isValidId = _this.isValidId(updatedUser.id);
-            if (!isValidId) {
-                reject(new errors_1.BadRequestError('A valid id must be provided for update operations.'));
-            }
-            var isValidUser = Object.values(updatedUser).every(function (val) { return val; });
-            if (!isValidUser) {
-                reject(new errors_1.BadRequestError('Invalid property values found in provided user.'));
+            if (!validator_1.default.isValidObject(updatedUser) || !validator_1.default.isValidId(updatedUser.id)) {
+                reject(new errors_1.BadRequestError('Invalid user provided (invalid values found).'));
                 return;
             }
             setTimeout(function () {
@@ -160,11 +142,15 @@ var UserRepository = /** @class */ (function () {
                 }
                 persistedUser = updatedUser;
                 resolve(true);
+                return;
             });
         });
     };
     UserRepository.prototype.deleteById = function (id) {
         return new Promise(function (resolve, reject) {
+            if (!validator_1.default.isValidId(id)) {
+                reject(new errors_1.BadRequestError());
+            }
             reject(new errors_1.NotImplementedError());
         });
     };
@@ -172,9 +158,6 @@ var UserRepository = /** @class */ (function () {
         var usr = __assign({}, user);
         delete usr.password;
         return usr;
-    };
-    UserRepository.prototype.isValidId = function (id) {
-        return (id && typeof id === 'number' && Number.isInteger(id) && id >= 0);
     };
     return UserRepository;
 }());
