@@ -18,4 +18,8 @@ export class User {
         this.dob = dob;
     }
 
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> 1c2f2f555b88c521243348d791927c6627ded4bf
