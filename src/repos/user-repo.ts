@@ -210,7 +210,7 @@ export class UserRepository implements CrudRepository<User> {
 
         return new Promise<boolean>((resolve, reject) => {
             
-            if (!Validator.isValidId(id)) {
+            if (!isValidId(id)) {
                 reject(new BadRequestError());
             }
 
