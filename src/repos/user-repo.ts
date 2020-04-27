@@ -13,7 +13,7 @@ export class UserRepository implements CrudRepository<User> {
 
     getAll(): Promise<User[]> {
 
-        return new Promise<User[]>((resolve, reject) => {
+        return new Promise<User[]>((resolve) => {
 
             setTimeout(() => {
                 let users: User[] = data;
@@ -26,7 +26,7 @@ export class UserRepository implements CrudRepository<User> {
 
     getById(id: number): Promise<User> {
 
-        return new Promise<User>((resolve, reject) => {
+        return new Promise<User>((resolve) => {
 
             setTimeout(() => {
                 const user = {...data.find(user => user.id === id)};
@@ -36,53 +36,13 @@ export class UserRepository implements CrudRepository<User> {
         });
     }
 
-    getUserByUsername(un: string): Promise<User> {
+    getUserByUniqueKey(key: string, val: string): Promise<User> {
 
         return new Promise<User>((resolve, reject) => {
-
-            if (!Validator.isValidStrings(un)) {
-                reject(new BadRequestError());
-                return;
-            }
            
             setTimeout(() => {
-        
-                const user = {...data.find(user => user.username === un)};
-                
-                if (Object.keys(user).length === 0) {
-                    reject(new ResourceNotFoundError());
-                    return;
-                }
-        
+                const user = {...data.find(user => user[key] === val)};
                 resolve(user);
-        
-            }, 250);
-
-        });
-        
-    
-    }
-
-    getUserByEmail(email: string): Promise<User> {
-
-        return new Promise<User>((resolve, reject) => {
-
-            if (!Validator.isValidStrings(email)) {
-                reject(new BadRequestError());
-                return;
-            }
-           
-            setTimeout(() => {
-        
-                const user = {...data.find(user => user.email === email)};
-                
-                if (Object.keys(user).length == 0) {
-                    reject(new ResourceNotFoundError());
-                    return;
-                }
-        
-                resolve(user);
-        
             }, 250);
 
         });
