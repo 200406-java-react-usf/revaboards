@@ -8,15 +8,12 @@ export const isValidStrings = (...strs: string[]): boolean => {
 
 export const isValidObject = (obj: Object, ...nullableProps: string[]) => {
     return obj && Object.keys(obj).every(key => {
-        if (key === 'id') return isValidId(obj['id']);
         if (nullableProps.includes(key)) return true;
         return obj[key];
     });
 };
 
-export const isPropertyOf = (prop: any, type: any) => {
-
-    console.log(`Property checker: ${prop}?`);
+export const isPropertyOf = (prop: string, type: any) => {
 
     if (!prop || !type) {
         return false;
@@ -26,7 +23,14 @@ export const isPropertyOf = (prop: any, type: any) => {
         return new Type();
     } 
 
-    return Object.keys(typeCreator(type)).includes(prop);
+    let tempInstance;
+    try {
+        tempInstance = typeCreator(type);
+    } catch {
+        return false;
+    }
+
+    return Object.keys(tempInstance).includes(prop);
 
 }
 
@@ -35,4 +39,4 @@ export default {
     isValidStrings,
     isValidObject,
     isPropertyOf
-};
+}
