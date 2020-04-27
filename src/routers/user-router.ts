@@ -1,19 +1,27 @@
+import url from 'url';
 import express from 'express';
 import { User } from '../models/user';
-import { UserRepository } from '../repos/user-repo';
-import { UserService } from '../services/user-service';
+import AppConfig from '../config/app';
 
 export const UserRouter = express.Router();
 
-const userRepo = new UserRepository();
-const userService = new UserService(userRepo);
+const userService = AppConfig.userService;
 
-UserRouter.get('/', async (req, resp) => {
+UserRouter.get('', async (req, resp) => {
     try {
-        let payload = await userService.getAllUsers();
-        return resp.status(200).json(payload);
+
+        let reqURL = url.parse(req.url, true);
+
+        if(Object.keys(reqURL.query).length !== 0) {
+            let payload = await userService.getUserByUniqueKey({...reqURL.query});;
+            return resp.status(200).json(payload);
+        } else {
+            let payload = await userService.getAllUsers();
+            return resp.status(200).json(payload);
+        }
+
     } catch (e) {
-        return resp.status(404).json(e).send();
+        return resp.status(e.statusCode).json(e).send();
     }
 });
 
@@ -23,15 +31,19 @@ UserRouter.get('/:id', async (req, resp) => {
         let payload = await userService.getUserById(id);
         return resp.status(200).json(payload);
     } catch (e) {
-        return resp.status(404).json(e).send();
+        return resp.status(e.statusCode).json(e).send();
     }
 });
 
-UserRouter.get('/?:k=:v', async (req, resp) => {
+UserRouter.post('', async (req, resp) => {
+
+    console.log('POST REQUEST RECEIVED AT /users');
+    console.log(req.body);
     try {
-        let payload = await userService.getUserByUniqueKey(req.params.k, req.params.v)
-        return resp.status(200).json(payload);
+        let newUser = await userService.addNewUser(req.body);
+        return resp.status(201).json(newUser).send();
     } catch (e) {
-        return resp.status(404).json(e).send();
+        return resp.status(e.statusCode).json(e).send();
     }
+
 });
