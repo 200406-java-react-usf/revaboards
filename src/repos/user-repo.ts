@@ -2,8 +2,7 @@ import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
 import Validator from '../util/validator';
-import {  
-    AuthenticationError, 
+import {
     BadRequestError, 
     NotImplementedError, 
     ResourceNotFoundError, 
@@ -12,21 +11,13 @@ import {
 
 export class UserRepository implements CrudRepository<User> {
 
-    private static instance: UserRepository;
-
-    private constructor() {}
-
-    static getInstance() {
-        return !UserRepository.instance ? UserRepository.instance = new UserRepository() : UserRepository.instance;
-    }
-
     getAll(): Promise<User[]> {
 
         return new Promise<User[]>((resolve, reject) => {
 
             setTimeout(() => {
                 let users: User[] = data;
-                resolve(users.map(this.removePassword));
+                resolve(users);
             }, 250);
 
         });
@@ -39,7 +30,7 @@ export class UserRepository implements CrudRepository<User> {
 
             setTimeout(() => {
                 const user = {...data.find(user => user.id === id)};
-                resolve(this.removePassword(user));
+                resolve(user);
             }, 250);
 
         });
@@ -56,14 +47,14 @@ export class UserRepository implements CrudRepository<User> {
            
             setTimeout(() => {
         
-                const user = {...data.filter(user => user.username === un)[0]};
+                const user = {...data.find(user => user.username === un)};
                 
-                if (Object.keys(user).length == 0) {
+                if (Object.keys(user).length === 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
         
-                resolve(this.removePassword(user));
+                resolve(user);
         
             }, 250);
 
@@ -83,14 +74,14 @@ export class UserRepository implements CrudRepository<User> {
            
             setTimeout(() => {
         
-                const user = {...data.filter(user => user.email === email)[0]};
+                const user = {...data.find(user => user.email === email)};
                 
                 if (Object.keys(user).length == 0) {
                     reject(new ResourceNotFoundError());
                     return;
                 }
         
-                resolve(this.removePassword(user));
+                resolve(user);
         
             }, 250);
 
@@ -104,8 +95,8 @@ export class UserRepository implements CrudRepository<User> {
         return new Promise<User>((resolve, reject) => {
         
             setTimeout(() => {
-                const user = {...data.filter(user => user.username === un && user.password === pw).pop()!};
-                resolve(this.removePassword(user));  
+                const user = {...data.find(user => user.username === un && user.password === pw)};
+                resolve(user);  
             }, 250);
 
         });
@@ -119,7 +110,7 @@ export class UserRepository implements CrudRepository<User> {
             setTimeout(() => { 
                 newUser.id = (data.length) + 1;
                 data.push(newUser);
-                resolve(this.removePassword(newUser));
+                resolve(newUser);
             });
 
         });
@@ -171,10 +162,4 @@ export class UserRepository implements CrudRepository<User> {
         });
     }
 
-    private removePassword(user: User): User {
-        if(!user || !user.password) return user;
-        let usr = {...user};
-        delete usr.password;
-        return usr;   
-    }
 }
