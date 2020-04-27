@@ -15,6 +15,7 @@ class ApplicationError {
     setMessage(message: string) {
         this.message = message;
     }
+
 }
 
 class ResourcePersistenceError extends ApplicationError {

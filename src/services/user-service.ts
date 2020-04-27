@@ -36,7 +36,7 @@ export class UserService {
         return new Promise<User>(async (resolve, reject) => {
 
             if (!isValidId(id)) {
-                return reject(new BadRequestError());
+                reject(new BadRequestError());
             }
 
             let user = {...await this.userRepo.getById(id)};
