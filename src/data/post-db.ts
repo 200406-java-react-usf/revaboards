@@ -1,6 +1,7 @@
 import { Post } from '../models/post';
-let id = 1;
 
+// challenge: replace this with id generator function
+let id = 1;
 export default [
     new Post(id++, 'hello world!', 'This is my first post! Huzzah!', 1),
     new Post(id++, 'this is cool', 'NodeJS is so awesome! It uses the same JS engine as Google Chrome: V8', 1),
