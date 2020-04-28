@@ -1,6 +1,6 @@
 import { User } from "../models/user";
 import { UserRepository } from "../repos/user-repo";
-import { isValidId, isValidStrings, isValidObject, isPropertyOf } from "../util/validator";
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
 import { 
     BadRequestError, 
     ResourceNotFoundError, 
@@ -48,9 +48,8 @@ export class UserService {
 
             let user = {...await this.userRepo.getById(id)};
 
-            if(Object.keys(user).length === 0) {
-                reject(new ResourceNotFoundError());
-                return;
+            if (isEmptyObject(user)) {
+                return reject(new ResourceNotFoundError());
             }
 
             resolve(this.removePassword(user));
@@ -88,7 +87,7 @@ export class UserService {
 
                 let user = {...await this.userRepo.getUserByUniqueKey(key, val)};
 
-                if (Object.keys(user).length === 0) {
+                if (isEmptyObject(user)) {
                     return reject(new ResourceNotFoundError());
                 }
 
@@ -117,7 +116,7 @@ export class UserService {
                 reject(e);
             }
 
-            if (Object.keys(authUser).length === 0) {
+            if (isEmptyObject(authUser)) {
                 reject(new AuthenticationError('Bad credentials provided.'));
                 return;
             }
