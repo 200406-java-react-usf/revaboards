@@ -10,12 +10,12 @@ describe('userService', () => {
     let mockRepo: UserRepository = new UserRepository();
 
     let mockUsers = [
-        new User(1, 'bill', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', new Date('01/01/1995')),
+        new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', new Date('01/01/1995')),
         new User(2, 'bbailey', 'password', 'Bob', 'Bailey', 'bbailey@revature.com', new Date('01/01/1983')),
         new User(3, 'ccountryman', 'password', 'Charlie', 'Countryman', 'ccountryman@revature.com', new Date('01/01/1990')),
         new User(4, 'ddavis', 'password', 'Daniel', 'Davis', 'ddavis@revature.com', new Date('07/01/1990')),
         new User(5, 'eeinstein', 'password', 'Emily', 'Einstein', 'eeinstein@revature.com', new Date('09/01/1993'))
-    ]
+    ];
 
     beforeEach(() => {
 
@@ -33,16 +33,8 @@ describe('userService', () => {
     test('should resolve to User[] (without passwords) when getAllUsers() successfully retrieves users from the data source', async () => {
 
         // Arrange
-        expect.assertions(7);
-        UserRepository.prototype.getAll = jest.fn().mockImplementation(() => {
-            return new Promise<User[]>((resolve) => {
-                resolve(mockUsers.map(user => {
-                    let temp = {...user};
-                    delete temp.password;
-                    return temp;
-                }));
-            });
-        });
+        expect.hasAssertions();
+        UserRepository.prototype.getAll = jest.fn().mockReturnValue(mockUsers);
 
         // Act
         let result = await sut.getAllUsers();
@@ -50,7 +42,7 @@ describe('userService', () => {
         // Assert
         expect(result).toBeTruthy();
         expect(result.length).toBe(5);
-        result.forEach(val => expect(val.password).toBeUndefined())
+        result.forEach(val => expect(val.password).toBeUndefined());
 
     });
 
@@ -58,9 +50,7 @@ describe('userService', () => {
 
         // Arrange
         expect.assertions(1);
-        UserRepository.prototype.getAll = jest.fn().mockImplementation(() => {
-            return new Promise<User[]>((resolve) => resolve([]));
-        });
+        UserRepository.prototype.getAll = jest.fn().mockReturnValue([]);
 
         // Act
         try {

@@ -2,6 +2,7 @@ import { User } from "../models/user";
 import { UserRepository } from "../repos/user-repo";
 import { isValidId, isValidStrings, isValidObject, isPropertyOf } from "../util/validator";
 import { BadRequestError, ResourceNotFoundError, NotImplementedError, ResourcePersistenceError, AuthenticationError } from "../errors/errors";
+import { query } from "express";
 
 export class UserService {
 
@@ -36,7 +37,7 @@ export class UserService {
         return new Promise<User>(async (resolve, reject) => {
 
             if (!isValidId(id)) {
-                reject(new BadRequestError());
+                return reject(new BadRequestError());
             }
 
             let user = {...await this.userRepo.getById(id)};
@@ -52,20 +53,46 @@ export class UserService {
 
     }
 
-    getUserByUniqueKey(key: string, val: string): Promise<User> {
+    getUserByUniqueKey(queryObj: any): Promise<User> {
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise<User>(async (resolve, reject) => {
 
-            if (!isValidStrings(key, val) || !isPropertyOf(key, User)) {
-                reject(new BadRequestError());
-                return;
+            // we need to wrap this up in a try/catch in case errors are thrown for our awaits
+            try {
+
+                let queryKeys = Object.keys(queryObj);
+
+                if(!queryKeys.every(key => isPropertyOf(key, User))) {
+                    return reject(new BadRequestError());
+                }
+
+                // we will only support single param searches (for now)
+                let key = queryKeys[0];
+                let val = queryObj[key];
+
+                // if they are searching for a user by id, reuse the logic we already have
+                if (key === 'id') {
+                    return resolve(await this.getUserById(+val));
+                }
+
+                // ensure that the provided key value is valid
+                if(!isValidStrings(val)) {
+                    return reject(new BadRequestError());
+                }
+
+                let user = {...await this.userRepo.getUserByUniqueKey(key, val)};
+
+                if (Object.keys(user).length === 0) {
+                    return reject(new ResourceNotFoundError());
+                }
+
+                resolve(this.removePassword(user));
+
+            } catch (e) {
+                reject(e);
             }
-            
-
-
 
         });
-
     }
 
     authenticateUser(un: string, pw: string): Promise<User> {
@@ -104,14 +131,14 @@ export class UserService {
                 return;
             }
 
-            let conflict = this.getUserByUniqueKey('username', newUser.username);
+            let conflict = this.getUserByUniqueKey({username: newUser.username});
         
             if (conflict) {
                 reject(new ResourcePersistenceError('The provided username is already taken.'));
                 return;
             }
         
-            conflict = this.getUserByUniqueKey('email', newUser.email);
+            conflict = this.getUserByUniqueKey({email: newUser.email});
     
             if (conflict) {
                 reject(new ResourcePersistenceError('The provided email is already taken.'));

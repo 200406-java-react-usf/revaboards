@@ -29,7 +29,7 @@ export const isPropertyOf = (prop: string, type: any) => {
     } catch {
         return false;
     }
-
+    
     return Object.keys(tempInstance).includes(prop);
 
 }
