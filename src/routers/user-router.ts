@@ -1,6 +1,5 @@
 import url from 'url';
 import express from 'express';
-import { User } from '../models/user';
 import AppConfig from '../config/app';
 
 export const UserRouter = express.Router();
@@ -8,6 +7,7 @@ export const UserRouter = express.Router();
 const userService = AppConfig.userService;
 
 UserRouter.get('', async (req, resp) => {
+
     try {
 
         let reqURL = url.parse(req.url, true);
@@ -23,6 +23,7 @@ UserRouter.get('', async (req, resp) => {
     } catch (e) {
         return resp.status(e.statusCode).json(e).send();
     }
+
 });
 
 UserRouter.get('/:id', async (req, resp) => {
