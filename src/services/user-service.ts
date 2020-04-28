@@ -2,7 +2,6 @@ import { User } from "../models/user";
 import { UserRepository } from "../repos/user-repo";
 import { isValidId, isValidStrings, isValidObject, isPropertyOf } from "../util/validator";
 import { BadRequestError, ResourceNotFoundError, NotImplementedError, ResourcePersistenceError, AuthenticationError } from "../errors/errors";
-import { query } from "express";
 
 export class UserService {
 
