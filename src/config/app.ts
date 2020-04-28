@@ -1,6 +1,7 @@
 import { UserRepository } from "../repos/user-repo";
-import { UserService } from "../services/user-service";
 import { PostRepository } from "../repos/post-repo";
+
+import { UserService } from "../services/user-service";
 import { PostService } from "../services/post-service";
 
 const userRepo = new UserRepository();
