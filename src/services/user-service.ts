@@ -1,6 +1,6 @@
 import { User } from "../models/user";
 import { UserRepository } from "../repos/user-repo";
-import { isValidId, isValidStrings, isValidObject, isPropertyOf } from "../util/validator";
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
 import { BadRequestError, ResourceNotFoundError, NotImplementedError, ResourcePersistenceError, AuthenticationError } from "../errors/errors";
 import { query } from "express";
 
@@ -42,7 +42,7 @@ export class UserService {
 
             let user = {...await this.userRepo.getById(id)};
 
-            if(Object.keys(user).length === 0) {
+            if(isEmptyObject(user)) {
                 reject(new ResourceNotFoundError());
                 return;
             }
@@ -57,11 +57,9 @@ export class UserService {
 
         return new Promise<User>(async (resolve, reject) => {
 
-            // we need to wrap this up in a try/catch in case errors are thrown for our awaits
             try {
 
                 let queryKeys = Object.keys(queryObj);
-
                 if(!queryKeys.every(key => isPropertyOf(key, User))) {
                     return reject(new BadRequestError());
                 }
@@ -82,14 +80,14 @@ export class UserService {
 
                 let user = {...await this.userRepo.getUserByUniqueKey(key, val)};
 
-                if (Object.keys(user).length === 0) {
+                if (isEmptyObject(user)) {
                     return reject(new ResourceNotFoundError());
                 }
 
-                resolve(this.removePassword(user));
+                return resolve(this.removePassword(user));
 
             } catch (e) {
-                reject(e);
+                return reject(e);
             }
 
         });
@@ -99,24 +97,22 @@ export class UserService {
 
         return new Promise<User>(async (resolve, reject) => {
 
-            if (!isValidStrings(un, pw)) {
-                reject(new BadRequestError());
-                return;
-            }
-
-            let authUser: User;
             try {
-                authUser = await this.userRepo.getUserByCredentials(un, pw);
-            } catch (e) {
-                reject(e);
-            }
+                if (!isValidStrings(un, pw)) {
+                    return reject(new BadRequestError());
+                }
+                
+                let authUser = await this.userRepo.getUserByCredentials(un, pw);
 
-            if (Object.keys(authUser).length === 0) {
-                reject(new AuthenticationError('Bad credentials provided.'));
-                return;
-            }
+                if (isEmptyObject(authUser)) {
+                    return reject(new AuthenticationError('Bad credentials provided.'));
+                }
 
-            resolve(this.removePassword(authUser));
+                return resolve(this.removePassword(authUser));
+
+            }  catch (e) {
+                return reject(e);
+            }
 
         });
 
@@ -126,28 +122,25 @@ export class UserService {
         
         return new Promise<User>(async (resolve, reject) => {
 
-            if (!isValidObject(newUser, 'id')) {
-                reject(new BadRequestError('Invalid property values found in provided user.'));
-                return;
-            }
-
-            let conflict = this.getUserByUniqueKey({username: newUser.username});
-        
-            if (conflict) {
-                reject(new ResourcePersistenceError('The provided username is already taken.'));
-                return;
-            }
-        
-            conflict = this.getUserByUniqueKey({email: newUser.email});
-    
-            if (conflict) {
-                reject(new ResourcePersistenceError('The provided email is already taken.'));
-                return;
-            }
-
             try {
+
+                if (!isValidObject(newUser, 'id')) {
+                    return reject(new BadRequestError('Invalid property values found in provided user.'));
+                }
+
+                if (!this.isUsernameAvailable(newUser.username)) {
+                    return reject(new ResourcePersistenceError('The provided username or is already taken.'));
+                }
+
+                if (!this.isEmailAvailable(newUser.email)) {
+                    return reject(new ResourcePersistenceError('The provided email or is already taken.'));
+                }
+
+                newUser.role = 'User';
                 const persistedUser = await this.userRepo.save(newUser);
+
                 resolve(this.removePassword(persistedUser));
+
             } catch (e) {
                 reject(e);
             }
@@ -182,6 +175,16 @@ export class UserService {
             reject(new NotImplementedError());
         });
 
+    }
+
+    async isUsernameAvailable(username: string): Promise<boolean> {
+        let conflict = await this.userRepo.getUserByUniqueKey('username', username);
+        return !isEmptyObject(conflict);
+    }
+
+    async isEmailAvailable(email: string): Promise<boolean> {
+        let conflict = await this.userRepo.getUserByUniqueKey('email', email);
+        return !isEmptyObject(conflict);
     }
 
     private removePassword(user: User): User {
