@@ -2,7 +2,6 @@ import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
 import {
-    BadRequestError, 
     NotImplementedError, 
     ResourceNotFoundError, 
     ResourcePersistenceError

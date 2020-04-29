@@ -2,7 +2,7 @@ import session from 'express-session';
 
 const sessionConfig = {
     secret: 'revature',
-    cookie:  {
+    cookie: {
         secure: false
     },
     resave: false,

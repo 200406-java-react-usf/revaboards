@@ -58,7 +58,7 @@ class AuthorizationError extends ApplicationError {
 
     constructor(reason?: string) {
         super(403, reason);
-        super.setMessage('Authorization failed.');
+        super.setMessage('You do not have permission to access this resource!');
     }
 
 }
