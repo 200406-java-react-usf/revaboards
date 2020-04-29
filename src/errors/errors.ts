@@ -54,6 +54,15 @@ class AuthenticationError extends ApplicationError {
 
 }
 
+class AuthorizationError extends ApplicationError {
+
+    constructor(reason?: string) {
+        super(403, reason);
+        super.setMessage('Authorization failed.');
+    }
+
+}
+
 class NotImplementedError extends ApplicationError {
 
     constructor(reason?: string) {
@@ -68,5 +77,6 @@ export {
     ResourcePersistenceError,
     BadRequestError,
     AuthenticationError,
-    NotImplementedError
+    NotImplementedError,
+    AuthorizationError
 };
