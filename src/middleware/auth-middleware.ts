@@ -19,11 +19,11 @@ export const guardFactory = (roles: string[]) => {
         } else if(!req.session.principal) {
             resp.status(401).send(new AuthenticationError('No session found! Please login.'));
         } else {
-            
+    
             let allowed = roles.filter(role => req.session.principal.role === role).length !== 0;
 
             if(!allowed){
-                resp.status(403).send('You are UnAuthorized for this endpoint')
+                resp.status(403).send(new AuthorizationError());
             }
 
             next();
