@@ -1,28 +1,25 @@
 import { AuthorizationError, AuthenticationError } from '../errors/errors';
-
-export const authUserGuard = (req, resp, next) => {
-    if (!req.session.principal) {
-        resp.status(401).send(new AuthenticationError('No session found! Please login.'));
-    } else if (req.session.principal.role === 'Admin' || req.session.principal.id === +req.params.id) {
-        next();
-    } else {
-        resp.status(403).send(new AuthorizationError());
-    }
-}
+import { Request, Response } from 'express';
 
 export const guardFactory = (roles: string[]) => {
 
-    return (req, resp, next) => {
+    let _roles = roles.map(role => role.toLowerCase());
+
+    return (req: Request, resp: Response, next) => {
+
+        let requester = req.session.principal;
         
-        if (roles.includes('Everyone')) {
+        if (roles.includes('everyone')) {
             next();
-        } else if(!req.session.principal) {
+        } else if(!requester) {
             resp.status(401).send(new AuthenticationError('No session found! Please login.'));
         } else {
-    
-            let allowed = roles.filter(role => req.session.principal.role === role).length !== 0;
 
-            if(!allowed){
+            let requesterRole = (req.session.principal.role as string).toLowerCase();
+            let selfRequest = req.params && (requester.id === +req.params.id);
+            let allowed = roles.includes(requesterRole); 
+            
+            if(!selfRequest && !allowed){
                 resp.status(403).send(new AuthorizationError());
             }
 
