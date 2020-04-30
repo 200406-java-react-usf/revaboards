@@ -1,17 +1,5 @@
 import { AuthorizationError, AuthenticationError } from '../errors/errors';
 
-export const adminGuard = (req, resp, next) => {
-
-    if (!req.session.principal) {
-        resp.status(401).send(new AuthenticationError('No session found! Please login.'));
-    } else if(req.session.principal.role === 'Admin') {
-        next();
-    } else {
-        resp.status(403).send(new AuthorizationError());
-    }
-    
-}
-
 export const authUserGuard = (req, resp, next) => {
     if (!req.session.principal) {
         resp.status(401).send(new AuthenticationError('No session found! Please login.'));
