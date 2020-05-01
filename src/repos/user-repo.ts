@@ -9,15 +9,30 @@ import {
 } from '../errors/errors';
 import { PoolClient } from 'pg';
 import { connectionPool } from '..';
+import { mapUserResultSet } from '../util/result-set-mapper';
 
 export class UserRepository implements CrudRepository<User> {
+
+    baseQuery = `
+        select
+            au.id,
+            au.username,
+            au.password,
+            au.first_name,
+            au.last_name,
+            au.email,
+            ur.name as role_name
+        from app_users au
+        join user_roles ur
+        on au.role_id = ur.id
+    `;
 
     async getAll(): Promise<User[]> {
 
         let client: PoolClient;
         try {
             client = await connectionPool.connect();
-            let sql = 'select * from app_users';
+            let sql = ``;
             let rs = await client.query(sql);
             return rs.rows;
         } catch (e) {
@@ -29,60 +44,71 @@ export class UserRepository implements CrudRepository<User> {
     
     }
 
-    getById(id: number): Promise<User> {
+    async getById(id: number): Promise<User> {
 
-        return new Promise<User>((resolve) => {
-
-            setTimeout(() => {
-                const user = {...data.find(user => user.id === id)};
-                resolve(user);
-            }, 250);
-
-        });
+		let client: PoolClient;
+        try {
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.id = $1`;
+            let rs = await client.query(sql);
+            return mapUserResultSet(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServiceError();
+        } finally {
+            client && client.release();
+        }
+        
     }
 
-    getUserByUniqueKey(key: string, val: string): Promise<User> {
+    async getUserByUniqueKey(key: string, val: string): Promise<User> {
 
-        return new Promise<User>((resolve, reject) => {
-           
-            setTimeout(() => {
-                const user = {...data.find(user => user[key] === val)};
-                resolve(user);
-            }, 250);
-
-        });
-        
+        let client: PoolClient;
+        try {
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.${key} = $1`;
+            let rs = await client.query(sql, [val]);
+            return mapUserResultSet(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServiceError();
+        } finally {
+            client && client.release();
+        }
     
     }
 
-    getUserByCredentials(un: string, pw: string) {
+    async getUserByCredentials(un: string, pw: string) {
         
-        return new Promise<User>((resolve, reject) => {
-        
-            setTimeout(() => {
-                const user = {...data.find(user => user.username === un && user.password === pw)};
-                resolve(user);  
-            }, 250);
-
-        });
+        let client: PoolClient;
+        try {
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.username = $1 and au.password = $2`;
+            let rs = await client.query(sql, [un,pw]);
+            return mapUserResultSet(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServiceError();
+        } finally {
+            client && client.release();
+        }
     
     }
 
-    save(newUser: User): Promise<User> {
+    async save(newUser: User): Promise<User> {
             
-        return new Promise<User>((resolve, reject) => {
-        
-            setTimeout(() => { 
-                newUser.id = (data.length) + 1;
-                data.push(newUser);
-                resolve(newUser);
-            });
-
-        });
+        let client: PoolClient;
+        try {
+            client = await connectionPool.connect();
+            let sql = ``;
+            let rs = await client.query(sql);
+            return mapUserResultSet(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServiceError();
+        } finally {
+            client && client.release();
+        }
     
     }
 
-    update(updatedUser: User): Promise<boolean> {
+    async update(updatedUser: User): Promise<boolean> {
         
         return new Promise<boolean>((resolve, reject) => {
         
