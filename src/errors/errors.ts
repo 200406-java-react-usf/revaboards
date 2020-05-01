@@ -72,11 +72,21 @@ class NotImplementedError extends ApplicationError {
 
 }
 
+class InternalServerError extends ApplicationError {
+
+    constructor(reason?: string) {
+        super(500, reason);
+        super.setMessage('Internal server error.');
+    }
+
+}
+
 export {
     ResourceNotFoundError,
     ResourcePersistenceError,
     BadRequestError,
     AuthenticationError,
     NotImplementedError,
-    AuthorizationError
+    AuthorizationError,
+    InternalServerError
 };
