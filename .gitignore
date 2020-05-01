@@ -2,7 +2,5 @@ node_modules/
 package-lock.json
 build/
 coverage/
-<<<<<<< HEAD
-=======
 */__temp__/
->>>>>>> 32a65224f730e4a9e8e12cacef27dffd51e87427
+.env
