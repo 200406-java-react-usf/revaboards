@@ -4,10 +4,16 @@ function MailWorker() {
     this.server = 'fake-smtp-server.com';
     this.port = 25;
 }
+// MailWorker.prototype.__proto__ = events.EventEmitter.prototype;
+// const mailWorker = new MailWorker();
 
-MailWorker.prototype.__proto__ = events.EventEmitter.prototype;
+// var mailWorker = Object.create(events.EventEmitter.prototype);
+// mailWorker.server = 'fake-smtp-server.com';
+// mailWorker.port = 25;
 
-const mailWorker = new MailWorker();
+
+
+
 
 mailWorker.on('newRegister', function(recipientEmail) {
 
