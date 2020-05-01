@@ -1,6 +1,7 @@
 import { isValidId, isValidStrings, isValidObject, isPropertyOf } from "../util/validator";
 import { User } from "../models/user";
 import { Post } from "../models/post";
+import { Role } from "../models/role";
 
 describe('validator', () => {
 
@@ -113,7 +114,7 @@ describe('validator', () => {
 
         // Act
         let result1 = isValidObject(new Post(1, 'title', 'body', 1));
-        let result2 = isValidObject(new User(1, 'username', 'password', 'first', 'last', 'email', 'role'));
+        let result2 = isValidObject(new User(1, 'username', 'password', 'first', 'last', 'email', new Role('Locked')));
 
         // Assert
         expect(result1).toBe(true);
@@ -128,7 +129,7 @@ describe('validator', () => {
 
         // Act
         let result1 = isValidObject(new Post(0, 'title', 'body', 1), 'id');
-        let result2 = isValidObject(new User(0, 'username', 'password', 'first', 'last', 'email', 'role'), 'id');
+        let result2 = isValidObject(new User(0, 'username', 'password', 'first', 'last', 'email', new Role('Locked')), 'id');
 
         // Assert
         expect(result1).toBe(true);
@@ -143,7 +144,7 @@ describe('validator', () => {
 
         // Act
         let result1 = isValidObject(new Post(1, '', 'body', 1));
-        let result2 = isValidObject(new User(1, 'username', 'password', '', 'last', 'email', 'role'));
+        let result2 = isValidObject(new User(1, 'username', 'password', '', 'last', 'email', new Role('Locked')));
 
         // Assert
         expect(result1).toBe(false);
@@ -158,7 +159,7 @@ describe('validator', () => {
 
         // Act
         let result1 = isValidObject(new Post(1, '', 'body', 1), 'id');
-        let result2 = isValidObject(new User(1, 'username', 'password', '', 'last', 'email', 'role'), 'id');
+        let result2 = isValidObject(new User(1, 'username', 'password', '', 'last', 'email', new Role('Locked')), 'id');
 
         // Assert
         expect(result1).toBe(false);

@@ -3,6 +3,7 @@ import { UserRepository } from '../repos/user-repo';
 import { User } from '../models/user';
 import Validator from '../util/validator';
 import { ResourceNotFoundError, BadRequestError } from '../errors/errors';
+import { Role } from '../models/role';
 
 describe('userService', () => {
 
@@ -10,11 +11,11 @@ describe('userService', () => {
     let mockRepo: UserRepository = new UserRepository();
 
     let mockUsers = [
-        new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'),
-        new User(2, 'bbailey', 'password', 'Bob', 'Bailey', 'bbailey@revature.com', 'Admin'),
-        new User(3, 'ccountryman', 'password', 'Charlie', 'Countryman', 'ccountryman@revature.com', 'User'),
-        new User(4, 'ddavis', 'password', 'Daniel', 'Davis', 'ddavis@revature.com', 'User'),
-        new User(5, 'eeinstein', 'password', 'Emily', 'Einstein', 'eeinstein@revature.com', 'User')
+        new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', new Role(1)),
+        new User(2, 'bbailey', 'password', 'Bob', 'Bailey', 'bbailey@revature.com', new Role(2)),
+        new User(3, 'ccountryman', 'password', 'Charlie', 'Countryman', 'ccountryman@revature.com', new Role(3)),
+        new User(4, 'ddavis', 'password', 'Daniel', 'Davis', 'ddavis@revature.com', new Role(4)),
+        new User(5, 'eeinstein', 'password', 'Emily', 'Einstein', 'eeinstein@revature.com', new Role(5))
     ];
 
     beforeEach(() => {
@@ -42,7 +43,6 @@ describe('userService', () => {
         // Assert
         expect(result).toBeTruthy();
         expect(result.length).toBe(5);
-        result.forEach(val => expect(val.password).toBeUndefined());
 
     });
 
@@ -66,7 +66,7 @@ describe('userService', () => {
     test('should resolve to User when getUserById is given a valid an known id', async () => {
 
         // Arrange
-        expect.assertions(3);
+        expect.hasAssertions();
         
         Validator.isValidId = jest.fn().mockReturnValue(true);
 
@@ -81,7 +81,6 @@ describe('userService', () => {
         // Assert
         expect(result).toBeTruthy();
         expect(result.id).toBe(1);
-        expect(result.password).toBeUndefined();
 
     });
 
