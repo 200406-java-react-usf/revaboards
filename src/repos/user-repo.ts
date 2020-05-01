@@ -32,7 +32,7 @@ export class UserRepository implements CrudRepository<User> {
         let client: PoolClient;
         try {
             client = await connectionPool.connect();
-            let sql = ``;
+            let sql = `${this.baseQuery}`;
             let rs = await client.query(sql);
             return rs.rows;
         } catch (e) {
@@ -50,7 +50,7 @@ export class UserRepository implements CrudRepository<User> {
         try {
             client = await connectionPool.connect();
             let sql = `${this.baseQuery} where au.id = $1`;
-            let rs = await client.query(sql);
+            let rs = await client.query(sql, [id]);
             return mapUserResultSet(rs.rows[0]);
         } catch (e) {
             throw new InternalServiceError();
