@@ -19,7 +19,7 @@ export class UserService {
     async getAllUsers(): Promise<User[]> {
 
         try {
-            
+
             let users = await this.userRepo.getAll();
 
             if (users.length == 0) {
@@ -34,92 +34,88 @@ export class UserService {
 
     }
 
-    getUserById(id: number): Promise<User> {
+    async getUserById(id: number): Promise<User> {
 
-        return new Promise<User>(async (resolve, reject) => {
+        try {
 
             if (!isValidId(id)) {
-                return reject(new BadRequestError());
+                throw new BadRequestError();
             }
 
-            let user = {...await this.userRepo.getById(id)};
+            let user = await this.userRepo.getById(id);
 
             if (isEmptyObject(user)) {
-                return reject(new ResourceNotFoundError());
+                throw new ResourceNotFoundError();
             }
 
-            resolve(this.removePassword(user));
+            return this.removePassword(user);
 
-        });
+        } catch (e) {
+            throw e;
+        }
 
     }
 
-    getUserByUniqueKey(queryObj: any): Promise<User> {
+    async getUserByUniqueKey(queryObj: any): Promise<User> {
 
-        return new Promise<User>(async (resolve, reject) => {
+        // we need to wrap this up in a try/catch in case errors are thrown for our awaits
+        try {
 
-            // we need to wrap this up in a try/catch in case errors are thrown for our awaits
-            try {
+            let queryKeys = Object.keys(queryObj);
 
-                let queryKeys = Object.keys(queryObj);
-
-                if(!queryKeys.every(key => isPropertyOf(key, User))) {
-                    return reject(new BadRequestError());
-                }
-
-                // we will only support single param searches (for now)
-                let key = queryKeys[0];
-                let val = queryObj[key];
-
-                // if they are searching for a user by id, reuse the logic we already have
-                if (key === 'id') {
-                    return resolve(await this.getUserById(+val));
-                }
-
-                // ensure that the provided key value is valid
-                if(!isValidStrings(val)) {
-                    return reject(new BadRequestError());
-                }
-
-                let user = {...await this.userRepo.getUserByUniqueKey(key, val)};
-
-                if (isEmptyObject(user)) {
-                    return reject(new ResourceNotFoundError());
-                }
-
-                resolve(this.removePassword(user));
-
-            } catch (e) {
-                reject(e);
+            if(!queryKeys.every(key => isPropertyOf(key, User))) {
+                throw new BadRequestError();
             }
 
-        });
+            // we will only support single param searches (for now)
+            let key = queryKeys[0];
+            let val = queryObj[key];
+
+            // if they are searching for a user by id, reuse the logic we already have
+            if (key === 'id') {
+                return await this.getUserById(+val);
+            }
+
+            // ensure that the provided key value is valid
+            if(!isValidStrings(val)) {
+                throw new BadRequestError();
+            }
+
+            let user = await this.userRepo.getUserByUniqueKey(key, val);
+
+            if (isEmptyObject(user)) {
+                throw new ResourceNotFoundError();
+            }
+
+            return this.removePassword(user);
+
+        } catch (e) {
+            throw e;
+        }
     }
 
-    authenticateUser(un: string, pw: string): Promise<User> {
+    async authenticateUser(un: string, pw: string): Promise<User> {
 
-        return new Promise<User>(async (resolve, reject) => {
+        try {
 
             if (!isValidStrings(un, pw)) {
-                reject(new BadRequestError());
-                return;
+                throw new BadRequestError();
             }
 
             let authUser: User;
-            try {
-                authUser = await this.userRepo.getUserByCredentials(un, pw);
-            } catch (e) {
-                reject(e);
-            }
+            
+            authUser = await this.userRepo.getUserByCredentials(un, pw);
+           
 
             if (isEmptyObject(authUser)) {
-                reject(new AuthenticationError('Bad credentials provided.'));
-                return;
+                throw new AuthenticationError('Bad credentials provided.');
             }
 
-            resolve(this.removePassword(authUser));
+            return this.removePassword(authUser);
 
-        });
+        } catch (e) {
+            throw e;
+        }
 
     }
 
