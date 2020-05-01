@@ -13,7 +13,6 @@
   "dependencies": {
     "@types/pg": "^7.14.3",
     "body-parser": "^1.19.0",
-    "deps": "^0.1.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
@@ -27,7 +26,6 @@
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "eslint": "^6.8.0",
-    "eslint-plugin-import": "^2.20.2",
     "jest": "^25.3.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.3",
