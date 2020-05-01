@@ -64,6 +64,15 @@ class AuthorizationError extends ApplicationError {
 
 }
 
+class InternalServerError extends ApplicationError {
+
+    constructor(reason?: string) {
+        super(500, reason);
+        super.setMessage('An unspecified error occurred.');
+    }
+
+}
+
 class NotImplementedError extends ApplicationError {
 
     constructor(reason?: string) {
@@ -79,5 +88,6 @@ export {
     BadRequestError,
     AuthenticationError,
     AuthorizationError,
+    InternalServerError,
     NotImplementedError
 };

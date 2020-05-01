@@ -6,7 +6,7 @@ import { guardFactory } from '../middleware/auth-middleware';
 
 export const UserRouter = express.Router();
 
-const userService = AppConfig.userService;
+const userService = AppConfig.UserService;
 
 UserRouter.get('', guardFactory(['admin']), async (req, resp) => {
 

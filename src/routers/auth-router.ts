@@ -1,12 +1,10 @@
-import url from 'url';
 import express from 'express';
 import AppConfig from '../config/app';
-import { isEmptyObject } from '../util/validator';
 import { Principal } from '../dtos/principal';
 
 export const AuthRouter = express.Router();
 
-const userService = AppConfig.userService;
+const userService = AppConfig.UserService;
 
 AuthRouter.get('', (req, resp) => {
     delete req.session.principal;

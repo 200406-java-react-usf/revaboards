@@ -4,7 +4,7 @@ import AppConfig from '../config/app';
 
 export const PostRouter = express.Router();
 
-const postService = AppConfig.postService;
+const postService = AppConfig.PostService;
 
 // PostRouter.get('/', async (req, resp) => {
 //     try {

@@ -1,26 +1,46 @@
 import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
-import Validator from '../util/validator';
+import AppConfig from '../config/app';
 import {
-    BadRequestError, 
     NotImplementedError, 
     ResourceNotFoundError, 
-    ResourcePersistenceError
+    ResourcePersistenceError,
+    InternalServerError
 } from '../errors/errors';
+import { PoolClient } from 'pg';
 
 export class UserRepository implements CrudRepository<User> {
 
-    getAll(): Promise<User[]> {
+    async getAll(): Promise<User[]> {
 
-        return new Promise<User[]>((resolve) => {
+        let obj = {
+            host: process.env['DB_HOST'],
+            port: +process.env['DB_PORT'],
+            database: process.env['DB_NAME'],
+            user: process.env['DB_USERNAME'],
+            password: process.env['DB_PASSWORD'],
+            max: 5
+        }
 
-            setTimeout(() => {
-                let users: User[] = data;
-                resolve(users);
-            }, 250);
+        console.log(obj)
 
-        });
+        let client: PoolClient;
+
+        try {
+            client = await AppConfig.ConnectionPool.connect();
+            let sql = 'SELECT * FROM app_users';
+            let result = await client.query(sql);
+            console.log(result.rows);
+            return result.rows;
+
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+
     
     }
 

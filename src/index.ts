@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import fs from 'fs';
 import morgan from 'morgan';
@@ -10,6 +11,7 @@ import { UserRouter } from './routers/user-router';
 import { PostRouter } from './routers/post-router';
 import { AuthRouter } from './routers/auth-router';
 
+dotenv.config();
 
 const app = express();
 
