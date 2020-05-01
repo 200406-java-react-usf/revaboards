@@ -27,8 +27,6 @@ UserRouter.get('', adminGuard, async (req, resp) => {
         resp.status(e.statusCode).json(e);
     }
 
-    resp.send();
-
 });
 
 UserRouter.get('/:id', async (req, resp) => {
@@ -37,7 +35,7 @@ UserRouter.get('/:id', async (req, resp) => {
         let payload = await userService.getUserById(id);
         return resp.status(200).json(payload);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
 
@@ -47,9 +45,9 @@ UserRouter.post('', async (req, resp) => {
     console.log(req.body);
     try {
         let newUser = await userService.addNewUser(req.body);
-        return resp.status(201).json(newUser).send();
+        return resp.status(201).json(newUser);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 
 });
