@@ -2,13 +2,13 @@ import url from 'url';
 import express from 'express';
 import AppConfig from '../config/app';
 import { isEmptyObject } from '../util/validator';
-import { adminGuard, authUserGuard } from '../middleware/auth-middleware';
+import { guardFactory } from '../middleware/auth-middleware';
 
 export const UserRouter = express.Router();
 
 const userService = AppConfig.userService;
 
-UserRouter.get('', adminGuard, async (req, resp) => {
+UserRouter.get('', guardFactory(['admin']), async (req, resp) => {
 
     try {
         let reqURL = url.parse(req.url, true);
@@ -22,23 +22,20 @@ UserRouter.get('', adminGuard, async (req, resp) => {
         }
 
     } catch (e) {
-        resp.status(e.statusCode).json(e);
+        resp.status(e.statusCode || 500).json(e);
     }
-
-    resp.send();
 
 });
 
-UserRouter.get('/:id', authUserGuard, async (req, resp) => {
+UserRouter.get('/:id', guardFactory(['admin']), async (req, resp) => {
     try {
         const id = +req.params.id;
         let payload = await userService.getUserById(id);
         resp.status(200).json(payload);
     } catch (e) {
-        resp.status(e.statusCode).json(e);
+        resp.status(e.statusCode || 500).json(e);
     }
 
-    resp.send();
 });
 
 UserRouter.post('', async (req, resp) => {
@@ -47,9 +44,29 @@ UserRouter.post('', async (req, resp) => {
         let newUser = await userService.addNewUser(req.body);
         resp.status(201).json(newUser);
     } catch (e) {
-        resp.status(e.statusCode).json(e);
+        resp.status(e.statusCode || 500).json(e);
     }
 
-    resp.send();
+});
+
+UserRouter.put('', guardFactory(['admin']), async (req, resp) => {
+
+    try {
+        await userService.updateUser(req.body);
+        resp.sendStatus(204);
+    } catch (e) {
+        resp.status(e.statusCode || 500).json(e);
+    }
+
+});
+
+UserRouter.delete('/:id', guardFactory(['admin']), async (req, resp) => {
+
+    try {
+        await userService.deleteById(+req.params.id);
+        resp.sendStatus(204);
+    } catch (e) {
+        resp.status(e.statusCode || 500).json(e);
+    }
 
 });
