@@ -3,11 +3,26 @@ import fs from 'fs';
 import morgan from 'morgan';
 import path from 'path';
 
+
 import { UserRouter } from './routers/user-router';
 import { PostRouter } from './routers/post-router';
 import { AuthRouter } from './routers/auth-router';
 import { sessionMiddleware } from './middleware/session-middleware';
 import { corsFilter } from './middleware/cors-filter';
+import dotenv from 'dotenv' 
+import { Pool } from 'pg';
+
+dotenv.config();
+
+//database configuration
+export const connectionPool: Pool = new Pool({
+    host: process.env['DB_HOST'],
+    port: +process.env['DB_PORT'],
+    database: process.env['DB_NAME'],
+    user: process.env['DB_USERNAME'],
+    password: process.env['DB_PASSWORD'],
+    max: 5
+});
 
 const app = express();
 

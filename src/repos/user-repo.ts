@@ -28,6 +28,7 @@ export class UserRepository implements CrudRepository<User> {
 
             setTimeout(() => {
                 const user = {...data.find(user => user.id === id)};
+                console.log('user', user)
                 resolve(user);
             }, 250);
 
