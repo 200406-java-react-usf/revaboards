@@ -4,21 +4,45 @@ import { CrudRepository } from './crud-repo';
 import {
     NotImplementedError, 
     ResourceNotFoundError, 
-    ResourcePersistenceError
+    ResourcePersistenceError,
+    InternalServerError
 } from '../errors/errors';
+import { PoolClient } from 'pg';
+import { connectionPool } from '..';
+import { mapUserResultSet } from '../util/result-set-mapper';
 
 export class UserRepository implements CrudRepository<User> {
 
-    getAll(): Promise<User[]> {
+    baseQuery= `
+    select
+        au.id, 
+        au.username, 
+        au.password, 
+        au.first_name,
+        au.last_name,
+        au.email,
+        ur.name as role_name
+    from app_users au
+    join user_roles ur
+    on au.role_id = ur.id
+    `
 
-        return new Promise<User[]>((resolve) => {
+    async getAll(): Promise<User[]> {
 
-            setTimeout(() => {
-                let users: User[] = data;
-                resolve(users);
-            }, 250);
+        let client: PoolClient;
 
-        });
+        try{
+            client = await connectionPool.connect();
+            let sql = 'select * from app_users';
+            let rs = await client.query(sql);
+            return rs.rows.map(mapUserResultSet);
+        }
+        catch (e){
+            throw new InternalServerError();
+        }
+        finally {
+            client && client.release();
+        }
     
     }
 
