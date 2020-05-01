@@ -4,3 +4,4 @@ build/
 coverage/
 */__temp__/
 .env
+.vscode
