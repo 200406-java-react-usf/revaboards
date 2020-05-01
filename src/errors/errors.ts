@@ -62,21 +62,20 @@ class AuthorizationError extends ApplicationError {
     }
 
 }
+class InternalServerError extends ApplicationError {
+
+    constructor(reason?: string) {
+        super(500, reason);
+        super.setMessage('An unexpected error occurred.');
+    }
+
+}
 
 class NotImplementedError extends ApplicationError {
 
     constructor(reason?: string) {
         super(501, reason);
         super.setMessage('No implementation yet!');
-    }
-
-}
-
-class InternalServerError extends ApplicationError {
-
-    constructor(reason?: string) {
-        super(500, reason);
-        super.setMessage('Internal server error.');
     }
 
 }

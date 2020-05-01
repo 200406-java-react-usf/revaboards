@@ -11,8 +11,10 @@ import { sessionMiddleware } from './middleware/session-middleware';
 import { corsFilter } from './middleware/cors-filter';
 import { Pool } from 'pg';
 
+// environment configuration
 dotenv.config();
 
+// database configuration
 export const connectionPool: Pool = new Pool({
     host: process.env['DB_HOST'],
     port: +process.env['DB_PORT'],
@@ -25,11 +27,12 @@ export const connectionPool: Pool = new Pool({
 fs.mkdir(`${__dirname}/logs`, () => {});
 const logStream = fs.createWriteStream(path.join(__dirname, 'logs/access.log'), { flags: 'a' });
 
+// web server configuration
 const app = express();
 app.use(morgan('combined', { stream: logStream }));
-app.use('/', express.json());
 app.use(sessionMiddleware);
 app.use(corsFilter);
+app.use('/', express.json());
 app.use('/users', UserRouter);
 app.use('/posts', PostRouter);
 app.use('/auth', AuthRouter);

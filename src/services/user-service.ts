@@ -17,16 +17,17 @@ export class UserService {
     }
 
     async getAllUsers(): Promise<User[]> {
-        try {
 
-            let users: User[] = [];
+        try {
+            
+            let users = await this.userRepo.getAll();
 
             if (users.length == 0) {
                 throw new ResourceNotFoundError();
             }
-            
-            return(users.map(this.removePassword));
-        
+
+            return users.map(this.removePassword);
+
         } catch (e) {
             throw e;
         }
