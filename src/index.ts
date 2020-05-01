@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import fs from 'fs';
 import morgan from 'morgan';
@@ -8,6 +9,7 @@ import { PostRouter } from './routers/post-router';
 import { AuthRouter } from './routers/auth-router';
 import { sessionMiddleware } from './middleware/session-middleware';
 import { corsFilter } from './middleware/cors-filter';
+dotenv.config();
 
 const app = express();
 
