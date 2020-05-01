@@ -27,8 +27,6 @@ UserRouter.get('', adminGuard, async (req, resp) => {
         resp.status(e.statusCode).json(e);
     }
 
-    resp.send();
-
 });
 
 UserRouter.get('/:id', async (req, resp) => {
