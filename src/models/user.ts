@@ -18,8 +18,4 @@ export class User {
         this.role = role;
     }
 
-<<<<<<< HEAD
-};
-=======
 }
->>>>>>> 4a760ef137c50d1413401cfb0caffec78978345c
