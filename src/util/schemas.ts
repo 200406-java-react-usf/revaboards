@@ -11,3 +11,7 @@ export interface UserSchema {
 export interface PostSchema {
 
 }
+
+export interface ThreadSchema {
+    
+}
