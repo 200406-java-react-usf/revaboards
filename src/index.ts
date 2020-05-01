@@ -10,14 +10,23 @@ import { PostRouter } from './routers/post-router';
 import { AuthRouter } from './routers/auth-router';
 import { sessionMiddleware } from './middleware/session-middleware';
 import { corsFilter } from './middleware/cors-filter';
+import { Pool } from 'pg';
 
 dotenv.config();
 //database configuration
+export const connectionPool: Pool = new Pool({
+    host: process.env.['DB_HOST'],
+    port: +process.env.['DB_PORT'],
+    database: process.env['DB_NAME'],
+    user: process.env['DB_USER'],
+    password: process.env['DB_PASSWORD'],
+    max: 5
 
+});
 
 const app = express();
 
-// logging configuration
+// logpging configuration
 fs.mkdir(`${__dirname}/logs`, () => {});
 const logStream = fs.createWriteStream(path.join(__dirname, 'logs/access.log'), { flags: 'a' });
 app.use(morgan('combined', { stream: logStream }));
