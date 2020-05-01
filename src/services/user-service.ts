@@ -34,24 +34,22 @@ export class UserService {
 
     }
 
-    getUserById(id: number): Promise<User> {
+    async getUserById(id: number): Promise<User> {
 
-        return new Promise<User>(async (resolve, reject) => {
-
+        try {
             if (!isValidId(id)) {
-                return reject(new BadRequestError());
+                throw new BadRequestError();
             }
 
-            let user = {...await this.userRepo.getById(id)};
+            let user = await this.userRepo.getById(2);
 
             if (isEmptyObject(user)) {
-                return reject(new ResourceNotFoundError());
+                throw new ResourceNotFoundError();
             }
-
-            resolve(this.removePassword(user));
-
-        });
-
+            return this.removePassword(user);
+        } catch (e) {
+            throw e;
+        }
     }
 
     getUserByUniqueKey(queryObj: any): Promise<User> {
