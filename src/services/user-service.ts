@@ -119,65 +119,59 @@ export class UserService {
 
     }
 
-    addNewUser(newUser: User): Promise<User> {
+    async addNewUser(newUser: User): Promise<User> {
         
-        return new Promise<User>(async (resolve, reject) => {
+        try {
 
             if (!isValidObject(newUser, 'id')) {
-                reject(new BadRequestError('Invalid property values found in provided user.'));
-                return;
+                throw new BadRequestError('Invalid property values found in provided user.');
             }
 
             let conflict = this.getUserByUniqueKey({username: newUser.username});
         
             if (conflict) {
-                reject(new ResourcePersistenceError('The provided username is already taken.'));
-                return;
+                throw new ResourcePersistenceError('The provided username is already taken.');
             }
         
             conflict = this.getUserByUniqueKey({email: newUser.email});
     
             if (conflict) {
-                reject(new ResourcePersistenceError('The provided email is already taken.'));
-                return;
+                throw new  ResourcePersistenceError('The provided email is already taken.');
             }
 
-            try {
-                const persistedUser = await this.userRepo.save(newUser);
-                resolve(this.removePassword(persistedUser));
-            } catch (e) {
-                reject(e);
-            }
+            const persistedUser = await this.userRepo.save(newUser);
 
-        });
+            return this.removePassword(persistedUser);
+
+        } catch (e) {
+            throw e
+        }
 
     }
 
-    updateUser(updatedUser: User): Promise<boolean> {
+    async updateUser(updatedUser: User): Promise<boolean> {
         
-        return new Promise<boolean>(async (resolve, reject) => {
+        try {
 
             if (!isValidObject(updatedUser)) {
-                reject(new BadRequestError('Invalid user provided (invalid values found).'));
-                return;
+                throw new BadRequestError('Invalid user provided (invalid values found).');
             }
 
-            try {
-                // let repo handle some of the other checking since we are still mocking db
-                resolve(await this.userRepo.update(updatedUser));
-            } catch (e) {
-                reject(e);
-            }
-
-        });
+            // let repo handle some of the other checking since we are still mocking db
+            return await this.userRepo.update(updatedUser);
+        } catch (e) {
+            throw e;
+        }
 
     }
 
-    deleteById(id: number): Promise<boolean> {
+    async deleteById(id: number): Promise<boolean> {
         
-        return new Promise<boolean>(async (resolve, reject) => {
-            reject(new NotImplementedError());
-        });
+        try {
+            throw new NotImplementedError();
+        } catch (e) {
+            throw e;
+        }
 
     }
 
