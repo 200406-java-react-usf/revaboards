@@ -144,7 +144,24 @@ export class UserRepository implements CrudRepository<User> {
         } finally {
             client && client.release();
         }
-        
     }
+    
+        // return new Promise<boolean>((resolve, reject) => {
 
+        //     setTimeout(() => {
+        //         let deleteuser = data.find(user => user.id === id);
+        //         if(isEmptyObject(deleteuser)){
+        //             resolve(true);
+        //         }
+        //         let index = data.indexOf(deleteuser)
+        //         data.splice(index,1);
+        //         let deletecheck = data.find(user => deleteuser === user);
+        //         if(!deletecheck){
+        //             console.log(`DELETED USER`);
+        //             resolve(true);
+        //         }
+        //     });
+            
+        // });
+    
 }

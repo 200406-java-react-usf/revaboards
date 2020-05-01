@@ -49,5 +49,19 @@ UserRouter.post('', async (req, resp) => {
     } catch (e) {
         return resp.status(e.statusCode).json(e);
     }
+});
 
+UserRouter.delete('', async (req, resp) => {
+
+    console.log('DELETE REQUEST RECEIVED AT /users');
+    console.log(req.body);
+    try {
+        await userService.deleteById(+req.body.id);
+        resp.sendStatus(204);
+
+    }
+    catch(e){
+        resp.status(e.statusCode).json(e).send();;
+    }
+    //resp.send();
 });
