@@ -20,8 +20,10 @@ export class UserRepository implements CrudRepository<User> {
             client = await connectionPool.connect();
             let sql = 'select * from app_users';
             let rs = await client.query(sql); // rs = ResultSet
+            console.log(rs);
             return rs.rows;
         } catch (e) {
+            console.log(e);
             throw new InternalServerError();
         } finally {
             client && client.release();
