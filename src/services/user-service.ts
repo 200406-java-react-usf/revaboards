@@ -18,40 +18,29 @@ export class UserService {
 
     async getAllUsers(): Promise<User[]> {
 
-        try {
+        let users = await this.userRepo.getAll();
 
-            let users = await this.userRepo.getAll();
-
-            if (users.length == 0) {
-                throw new ResourceNotFoundError();
-            }
-
-            return users.map(this.removePassword);
-
-        } catch (e) {
-            throw e;
+        if (users.length == 0) {
+            throw new ResourceNotFoundError();
         }
+
+        return users.map(this.removePassword);
 
     }
 
     async getUserById(id: number): Promise<User> {
 
-        try {
-            if (!isValidId(id)) {
-                throw new BadRequestError();
-            }
-
-            let user = await this.userRepo.getById(id);
-
-            if (isEmptyObject(user)) {
-                throw new ResourceNotFoundError();
-            }
-
-            return this.removePassword(user);
-
-        } catch (e) {
-            throw e;
+        if (!isValidId(id)) {
+            throw new BadRequestError();
         }
+
+        let user = await this.userRepo.getById(id);
+
+        if (isEmptyObject(user)) {
+            throw new ResourceNotFoundError();
+        }
+
+        return this.removePassword(user);
 
     }
 
@@ -126,18 +115,19 @@ export class UserService {
                 throw new BadRequestError('Invalid property values found in provided user.');
             }
 
-            let conflict = this.getUserByUniqueKey({username: newUser.username});
-        
-            if (conflict) {
+            let usernameAvailable = await this.isUsernameAvailable(newUser.username);
+
+            if (!usernameAvailable) {
                 throw new ResourcePersistenceError('The provided username is already taken.');
             }
         
-            conflict = this.getUserByUniqueKey({email: newUser.email});
+            let emailAvailable = await this.isEmailAvailable(newUser.email);
     
-            if (conflict) {
+            if (!emailAvailable) {
                 throw new  ResourcePersistenceError('The provided email is already taken.');
             }
 
+            newUser.role = 'User'; // all new registers have 'User' role by default
             const persistedUser = await this.userRepo.save(newUser);
 
             return this.removePassword(persistedUser);
@@ -172,6 +162,33 @@ export class UserService {
             throw e;
         }
 
+    }
+
+    private async isUsernameAvailable(username: string): Promise<boolean> {
+
+        try {
+            await this.getUserByUniqueKey({'username': username});
+        } catch (e) {
+            console.log('username is available')
+            return true;
+        }
+
+        console.log('username is unavailable')
+        return false;
+
+    }
+
+    private async isEmailAvailable(email: string): Promise<boolean> {
+        
+        try {
+            await this.getUserByUniqueKey({'email': email});
+        } catch (e) {
+            console.log('email is available')
+            return true;
+        }
+
+        console.log('email is unavailable')
+        return false;
     }
 
     private removePassword(user: User): User {
