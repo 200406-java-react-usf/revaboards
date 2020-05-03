@@ -1,12 +1,10 @@
 import url from 'url';
 import express from 'express';
-import AppConfig from '../config/app';
+import * as userService from '../services/user-service';
 import { isEmptyObject } from '../util/validator';
 import { guardFactory } from '../middleware/auth-middleware';
 
 export const UserRouter = express.Router();
-
-const userService = AppConfig.UserService;
 
 UserRouter.get('', guardFactory(['admin']), async (req, resp) => {
 

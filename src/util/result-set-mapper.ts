@@ -5,7 +5,7 @@ import { Role } from '../models/role';
 
 export function mapUserResultSet(resultSet: UserSchema): User {
 
-    return new User(
+    return resultSet && new User(
         resultSet.id,
         resultSet.username,
         resultSet.password,

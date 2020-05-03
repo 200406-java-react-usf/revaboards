@@ -1,10 +1,7 @@
 import express from 'express';
 import { Post } from '../models/post';
-import AppConfig from '../config/app';
 
 export const PostRouter = express.Router();
-
-const postService = AppConfig.PostService;
 
 // PostRouter.get('/', async (req, resp) => {
 //     try {

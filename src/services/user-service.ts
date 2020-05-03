@@ -1,12 +1,6 @@
 import { User } from "../models/user";
-import { UserRepository } from "../repos/user-repo";
-import { 
-    isValidId, 
-    isValidStrings, 
-    isValidObject, 
-    isPropertyOf, 
-    isEmptyObject 
-} from "../util/validator";
+import * as userRepo from "../repos/user-repo";
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
 import { 
     BadRequestError, 
     ResourceNotFoundError, 
@@ -15,190 +9,183 @@ import {
     AuthenticationError 
 } from "../errors/errors";
 import { Role } from "../models/role";
-import { mapUserEntity } from "../util/dto-mapper";
-import { UserDTO } from "../dtos";
 
-export class UserService {
+export async function getAllUsers(): Promise<User[]> {
 
-    constructor(private userRepo: UserRepository) {
-        console.log('Instantiating UserService...');
-        this.userRepo = userRepo;
-        console.log('UserService instantiation complete.')
+    let users = await userRepo.getAll();
+
+    if (users.length == 0) {
+        throw new ResourceNotFoundError();
     }
 
-    async getAllUsers(): Promise<UserDTO[]> {
+    return users.map(removePassword);
 
-        try {
-            
-            let users = await this.userRepo.getAll();
-            
-            if (users.length == 0) {
-                throw new ResourceNotFoundError();
-            }
+}
 
-            return users.map(mapUserEntity);
+export async function getUserById(id: number): Promise<User> {
 
-        } catch (e) {
-            throw e;
+    if (!isValidId(id)) {
+        throw new BadRequestError();
+    }
+
+    let user = await userRepo.getById(id);
+
+    if (isEmptyObject(user)) {
+        throw new ResourceNotFoundError();
+    }
+
+    return removePassword(user);
+
+}
+
+export async function getUserByUniqueKey(queryObj: any): Promise<User> {
+
+    try {
+
+        let queryKeys = Object.keys(queryObj);
+
+        if(!queryKeys.every(key => isPropertyOf(key, User))) {
+            throw new BadRequestError();
         }
 
-    }
+        // we will only support single param searches (for now)
+        let key = queryKeys[0];
+        let val = queryObj[key];
 
-    async getUserById(id: number): Promise<UserDTO> {
-
-       try {
-
-            if (!isValidId(id)) {
-                throw new BadRequestError();
-            }
-
-            let user = {...await this.userRepo.getById(id)};
-
-            if(isEmptyObject(user)) {
-                throw new ResourceNotFoundError();
-            }
-
-            return mapUserEntity(user);
-
-        } catch (e) {
-            throw e;
+        // if they are searching for a user by id, reuse the logic we already have
+        if (key === 'id') {
+            return await this.getUserById(+val);
         }
 
-    }
-
-    async getUserByUniqueKey(queryObj: any): Promise<UserDTO> {
-
-        try {
-
-            let queryKeys = Object.keys(queryObj);
-            if(!queryKeys.every(key => isPropertyOf(key, User))) {
-                throw new BadRequestError();
-            }
-
-            // we will only support single param searches (for now)
-            let key = queryKeys[0];
-            let val = queryObj[key];
-
-            // if they are searching for a user by id, reuse the logic we already have
-            if (key === 'id') {
-                return await this.getUserById(+val);
-            }
-
-            // ensure that the provided key value is valid
-            if(!isValidStrings(val)) {
-                throw new BadRequestError();
-            }
-
-            let user = {...await this.userRepo.getUserByUniqueKey(key, val)};
-
-            if (isEmptyObject(user)) {
-                throw new ResourceNotFoundError();
-            }
-
-            return mapUserEntity(user);
-
-        } catch (e) {
-            throw e;
+        // ensure that the provided key value is valid
+        if(!isValidStrings(val)) {
+            throw new BadRequestError();
         }
 
-    }
+        let user = await userRepo.getUserByUniqueKey(key, val);
 
-    async authenticateUser(un: string, pw: string): Promise<UserDTO> {
-
-        try {
-            
-            if (!isValidStrings(un, pw)) {
-                throw new BadRequestError();
-            }
-            
-            let authUser = await this.userRepo.getUserByCredentials(un, pw);
-
-            if (isEmptyObject(authUser)) {
-                throw new AuthenticationError('Bad credentials provided.');
-            }
-
-            return mapUserEntity(authUser);
-
-        }  catch (e) {
-            throw e;
+        if (isEmptyObject(user)) {
+            throw new ResourceNotFoundError();
         }
 
-    }
+        return removePassword(user);
 
-    addNewUser(newUser: User): Promise<User> {
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function authenticateUser(un: string, pw: string): Promise<User> {
+
+    try {
+
+        if (!isValidStrings(un, pw)) {
+            throw new BadRequestError();
+        }
+
+        let authUser: User;
         
-        return new Promise<User>(async (resolve, reject) => {
+        authUser = await userRepo.getUserByCredentials(un, pw);
 
-            try {
+        if (isEmptyObject(authUser)) {
+            throw new AuthenticationError('Bad credentials provided.');
+        }
 
-                if (!isValidObject(newUser, 'id')) {
-                    return reject(new BadRequestError('Invalid property values found in provided user.'));
-                }
+        return removePassword(authUser);
 
-                if (!this.isUsernameAvailable(newUser.username)) {
-                    return reject(new ResourcePersistenceError('The provided username or is already taken.'));
-                }
-
-                if (!this.isEmailAvailable(newUser.email)) {
-                    return reject(new ResourcePersistenceError('The provided email or is already taken.'));
-                }
-
-                newUser.role = new Role('User');
-                const persistedUser = await this.userRepo.save(newUser);
-
-                resolve(this.removePassword(persistedUser));
-
-            } catch (e) {
-                reject(e);
-            }
-
-        });
-
+    } catch (e) {
+        throw e;
     }
 
-    updateUser(updatedUser: User): Promise<boolean> {
-        
-        return new Promise<boolean>(async (resolve, reject) => {
+}
 
-            if (!isValidObject(updatedUser)) {
-                reject(new BadRequestError('Invalid user provided (invalid values found).'));
-                return;
-            }
+export async function addNewUser(newUser: User): Promise<User> {
+    
+    try {
 
-            try {
-                // let repo handle some of the other checking since we are still mocking db
-                resolve(await this.userRepo.update(updatedUser));
-            } catch (e) {
-                reject(e);
-            }
+        if (!isValidObject(newUser, 'id')) {
+            throw new BadRequestError('Invalid property values found in provided user.');
+        }
 
-        });
+        let usernameAvailable = await isUsernameAvailable(newUser.username);
 
+        if (!usernameAvailable) {
+            throw new ResourcePersistenceError('The provided username is already taken.');
+        }
+    
+        let emailAvailable = await isEmailAvailable(newUser.email);
+
+        if (!emailAvailable) {
+            throw new  ResourcePersistenceError('The provided email is already taken.');
+        }
+
+        newUser.role = new Role('User'); // all new registers have 'User' role by default
+        const persistedUser = await userRepo.save(newUser);
+
+        return removePassword(persistedUser);
+
+    } catch (e) {
+        throw e
     }
 
-    deleteById(id: number): Promise<boolean> {
-        
-        return new Promise<boolean>(async (resolve, reject) => {
-            reject(new NotImplementedError());
-        });
+}
 
+export async function updateUser(updatedUser: User): Promise<boolean> {
+    
+    try {
+
+        if (!isValidObject(updatedUser)) {
+            throw new BadRequestError('Invalid user provided (invalid values found).');
+        }
+
+        // let repo handle some of the other checking since we are still mocking db
+        return await userRepo.update(updatedUser);
+    } catch (e) {
+        throw e;
     }
 
-    async isUsernameAvailable(username: string): Promise<boolean> {
-        let conflict = await this.userRepo.getUserByUniqueKey('username', username);
-        return !isEmptyObject(conflict);
+}
+
+export async function deleteById(id: number): Promise<boolean> {
+    
+    try {
+        throw new NotImplementedError();
+    } catch (e) {
+        throw e;
     }
 
-    async isEmailAvailable(email: string): Promise<boolean> {
-        let conflict = await this.userRepo.getUserByUniqueKey('email', email);
-        return !isEmptyObject(conflict);
+}
+
+async function isUsernameAvailable(username: string): Promise<boolean> {
+
+    try {
+        await this.getUserByUniqueKey({'username': username});
+    } catch (e) {
+        console.log('username is available')
+        return true;
     }
 
-    private removePassword(user: User): User {
-        if(!user || !user.password) return user;
-        let usr = {...user};
-        delete usr.password;
-        return usr;   
+    console.log('username is unavailable')
+    return false;
+
+}
+
+export async function isEmailAvailable(email: string): Promise<boolean> {
+    
+    try {
+        await this.getUserByUniqueKey({'email': email});
+    } catch (e) {
+        console.log('email is available')
+        return true;
     }
 
+    console.log('email is unavailable')
+    return false;
+}
+
+function removePassword(user: User): User {
+    if(!user || !user.password) return user;
+    let usr = {...user};
+    delete usr.password;
+    return usr;   
 }

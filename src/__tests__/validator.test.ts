@@ -1,4 +1,4 @@
-import { isValidId, isValidStrings, isValidObject, isPropertyOf } from "../util/validator";
+import { isValidId, isValidStrings, isValidObject, isPropertyOf, isEmptyObject } from "../util/validator";
 import { User } from "../models/user";
 import { Post } from "../models/post";
 import { Role } from "../models/role";
@@ -217,6 +217,61 @@ describe('validator', () => {
         expect(result2).toBe(false);
         expect(result3).toBe(false);
         expect(result4).toBe(false);  
+
+    });
+
+    test('should return true if isEmptyObject is provided an empty object', () => {
+
+        // Arrange
+        expect.hasAssertions();
+
+        // Act
+        let result1 = isEmptyObject({});
+        let result2 = isEmptyObject(new Object());
+
+        // Assert
+        expect(result1).toBe(true);
+        expect(result2).toBe(true);
+
+    });
+
+    test('should return true if isEmptyObject is provided an falsy value', () => {
+
+        // Arrange
+        expect.hasAssertions();
+
+        // Act
+        let result1 = isEmptyObject(false);
+        let result2 = isEmptyObject(undefined);
+        let result3 = isEmptyObject(null);
+        let result4 = isEmptyObject(NaN);
+        let result5 = isEmptyObject(0);
+        let result6 = isEmptyObject('');
+
+        // Assert
+        expect(result1).toBe(true);
+        expect(result2).toBe(true);
+        expect(result3).toBe(true);
+        expect(result4).toBe(true);
+        expect(result5).toBe(true);
+        expect(result6).toBe(true);
+
+    });
+
+    test('should return false if isEmptyObject is provided a non-empty object', () => {
+
+        // Arrange
+        expect.hasAssertions();
+
+        // Act
+        let result1 = isEmptyObject({x: 1});
+        let result2 = isEmptyObject(new User(1, 'un', 'pw', 'fn', 'ln', 'email', new Role(4)));
+        let result3 = isEmptyObject(new Post(1, 'title', 'body', 1));
+
+        // Assert
+        expect(result1).toBe(false);
+        expect(result2).toBe(false);
+        expect(result3).toBe(false);
 
     });
 
