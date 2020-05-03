@@ -4,10 +4,23 @@ import { User } from '../models/user';
 import Validator from '../util/validator';
 import { ResourceNotFoundError, BadRequestError } from '../errors/errors';
 
+jest.mock('../repos/user-repo', () => {
+    
+    return new class UserRepository {
+            getAll = jest.fn();
+            getById = jest.fn();
+            getUserByUniqueKey = jest.fn();
+            getUserByCredentials = jest.fn();
+            save = jest.fn();
+            update = jest.fn();
+            deleteById = jest.fn();
+    }
+
+});
 describe('userService', () => {
 
     let sut: UserService;
-    let mockRepo: UserRepository = new UserRepository();
+    let mockRepo;
 
     let mockUsers = [
         new User(1, 'aanderson', 'password', 'Alice', 'Anderson', 'aanderson@revature.com', 'Admin'),
@@ -19,14 +32,20 @@ describe('userService', () => {
 
     beforeEach(() => {
 
-        sut = new UserService(mockRepo);
+        mockRepo = jest.fn(() => {
+            return {
+                getAll: jest.fn(),
+                getById: jest.fn(),
+                getUserByUniqueKey: jest.fn(),
+                getUserByCredentials: jest.fn(),
+                save: jest.fn(),
+                update: jest.fn(),
+                deleteById: jest.fn()
+            }
+        });
 
-        // Reset all external methods
-        for (let method in UserRepository.prototype) {
-            UserRepository.prototype[method] = jest.fn().mockImplementation(() => {
-                throw new Error(`Failed to mock external method: UserRepository.${method}!`);
-            });
-        }
+        // @ts-ignore
+        sut = new UserService(mockRepo);
     
     });
 
@@ -34,7 +53,7 @@ describe('userService', () => {
 
         // Arrange
         expect.hasAssertions();
-        UserRepository.prototype.getAll = jest.fn().mockReturnValue(mockUsers);
+        mockRepo.getAll = jest.fn().mockReturnValue(mockUsers);
 
         // Act
         let result = await sut.getAllUsers();
@@ -50,7 +69,7 @@ describe('userService', () => {
 
         // Arrange
         expect.assertions(1);
-        UserRepository.prototype.getAll = jest.fn().mockReturnValue([]);
+        mockRepo.getAll = jest.fn().mockReturnValue([]);
 
         // Act
         try {
@@ -70,7 +89,7 @@ describe('userService', () => {
         
         Validator.isValidId = jest.fn().mockReturnValue(true);
 
-        UserRepository.prototype.getById = jest.fn().mockImplementation((id: number) => {
+        mockRepo.getById = jest.fn().mockImplementation((id: number) => {
             return new Promise<User>((resolve) => resolve(mockUsers[id - 1]));
         });
 
@@ -89,7 +108,7 @@ describe('userService', () => {
 
         // Arrange
         expect.hasAssertions();
-        UserRepository.prototype.getById = jest.fn().mockReturnValue(false);
+        mockRepo.getById = jest.fn().mockReturnValue(false);
 
         // Act
         try {
@@ -106,7 +125,7 @@ describe('userService', () => {
 
         // Arrange
         expect.hasAssertions();
-        UserRepository.prototype.getById = jest.fn().mockReturnValue(false);
+        mockRepo.getById = jest.fn().mockReturnValue(false);
 
         // Act
         try {
@@ -123,7 +142,7 @@ describe('userService', () => {
 
         // Arrange
         expect.hasAssertions();
-        UserRepository.prototype.getById = jest.fn().mockReturnValue(false);
+        mockRepo.getById = jest.fn().mockReturnValue(false);
 
         // Act
         try {
@@ -140,7 +159,7 @@ describe('userService', () => {
 
         // Arrange
         expect.hasAssertions();
-        UserRepository.prototype.getById = jest.fn().mockReturnValue(false);
+        mockRepo.getById = jest.fn().mockReturnValue(false);
 
         // Act
         try {
@@ -157,7 +176,7 @@ describe('userService', () => {
 
         // Arrange
         expect.hasAssertions();
-        UserRepository.prototype.getById = jest.fn().mockReturnValue(true);
+        mockRepo.getById = jest.fn().mockReturnValue(true);
 
         // Act
         try {
