@@ -28,6 +28,7 @@ export async function getAll(): Promise<User[]> {
         let rs = await client.query(sql);
         return rs.rows.map(mapUserResultSet);
     } catch (e) {
+        console.log(e);
         throw new InternalServerError();
     } finally {
         client && client.release();
