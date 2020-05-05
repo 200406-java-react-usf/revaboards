@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 import express from 'express';
 
@@ -37,22 +36,3 @@ app.listen(8080, ()=>{
 })
 
 
-=======
-import express from 'express';
-import bodyparser from 'body-parser';
-
-import { UserRouter } from './routers/user-router';
-import { PostRouter } from './routers/post-router';
-
-const app = express();
-
-app.use('/', bodyparser.json());
-
-app.use('/users', UserRouter);
-app.use('/posts', PostRouter);
-
-
-app.listen(8080, () => {
-    console.log(`Application running and listening at: http://localhost:8080`);
-});
->>>>>>> 580f5ca1ac0d37fcbc53370377521200a32b9130

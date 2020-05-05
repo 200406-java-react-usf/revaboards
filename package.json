@@ -11,10 +11,7 @@
   "author": "Wezley Singleton",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
-=======
     "body-parser": "^1.19.0",
->>>>>>> 580f5ca1ac0d37fcbc53370377521200a32b9130
     "express": "^4.17.1"
   },
   "devDependencies": {
