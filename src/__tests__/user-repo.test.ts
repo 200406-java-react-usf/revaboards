@@ -27,7 +27,8 @@ jest.mock('../util/result-set-mapper', () => {
 describe('userRepo', () => {
 
     let sut = new UserRepository();
-    let mockConnect = mockIndex.connectionPool.connect;
+    let mockConnect = mockIndex.connectionPool.connect
+
 
     beforeEach(() => {
 
@@ -57,19 +58,22 @@ describe('userRepo', () => {
             }
         });
         (mockMapper.mapUserResultSet as jest.Mock).mockClear();
+        
     });
 
     test('should resolve to an array of Users when getAll retrieves records from data source', async () => {
         
         // Arrange
         expect.hasAssertions();
-
+        let result = await sut.getAll();
+        
         let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
         (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+        
 
         // Act
-        let result = await sut.getAll();
-
+        result = await sut.getAll();
+        
         // Assert
         expect(result).toBeTruthy();
         expect(result instanceof Array).toBe(true);
@@ -82,6 +86,8 @@ describe('userRepo', () => {
         
         // Arrange
         expect.hasAssertions();
+        console.log('*********************');
+        console.log(result);
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => { return { rows: [] } }), 
@@ -91,7 +97,8 @@ describe('userRepo', () => {
 
         // Act
         let result = await sut.getAll();
-
+        console.log('---------------------');
+        console.log(result);
         // Assert
         expect(result).toBeTruthy();
         expect(result instanceof Array).toBe(true);
