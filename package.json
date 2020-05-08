@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsc && node ./build/index.js",
     "test": "jest --watch --no-cache",
-    "coverage": "jest --coverage --no-cache"
+    "coverage": "jest --coverage --no-cache",
+    "build": "tsc"
   },
   "author": "Wezley Singleton",
   "license": "ISC",
