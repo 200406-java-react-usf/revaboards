@@ -1,104 +1,127 @@
-import { UserRepository as sut } from '../repos/user-repo';
+import { UserRepository } from '../repos/user-repo';
+import * as mockIndex from '..';
+import * as mockMapper from '../util/result-set-mapper';
 import { User } from '../models/user';
-import Validator from '../util/validator';
-import { 
-    BadRequestError, 
-    AuthenticationError, 
-    ResourceNotFoundError, 
-    ResourcePersistenceError 
-} from '../errors/errors';
+
+/*
+    We need to mock the connectionPool exported from the main module
+    of our application. At this time, we only use one exposed method
+    of the pg Pool API: connect. So we will provide a mock function 
+    in its place so that we can mock it in our tests.
+*/
+jest.mock('..', () => {
+    return {
+        connectionPool: {
+            connect: jest.fn()
+        }
+    }
+});
+
+// The result-set-mapper module also needs to be mocked
+jest.mock('../util/result-set-mapper', () => {
+    return {
+        mapUserResultSet: jest.fn()
+    }
+});
 
 describe('userRepo', () => {
 
-    // Set up external functions to throw errors by default (tests will configure if needed)
+    let sut = new UserRepository();
+    let mockConnect = mockIndex.connectionPool.connect;
+
     beforeEach(() => {
 
-        Validator.isValidId = jest.fn().mockImplementation(() => {
-            throw new Error('Failed to mock external method: isValidId!');
+        /*
+            We can provide a successful retrieval as the default mock implementation
+            since it is very verbose. We can provide alternative implementations for
+            the query and release methods in specific tests if needed.
+        */
+        (mockConnect as jest.Mock).mockClear().mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => {
+                    return {
+                        rows: [
+                            {
+                                id: 1,
+                                username: 'aanderson',
+                                password: 'password',
+                                first_name: 'Alice',
+                                last_name: 'Anderson',
+                                email: 'aanderson@revature.com',
+                                role_id: 1
+                            }
+                        ]
+                    }
+                }), 
+                release: jest.fn()
+            }
         });
-
-        Validator.isValidStrings = jest.fn().mockImplementation(() => {
-            throw new Error('Failed to mock external method: isValidStrings!');
-        });
-
-        Validator.isValidObject = jest.fn().mockImplementation(() => {
-            throw new Error('Failed to mock external method: isValidObject!');
-        });
-
+        (mockMapper.mapUserResultSet as jest.Mock).mockClear();
     });
 
-    test('should be a singleton', () => {
-
-        // Arrange
-        expect.assertions(1);
-
-        // Act
-        let reference1 = sut.getInstance();
-        let reference2 = sut.getInstance();
-
-        // Assert
-        expect(reference1).toEqual(reference2);
-
-    });
-
-    test('should return all users (without passwords) when getAll is called', async () => {
+    test('should resolve to an array of Users when getAll retrieves records from data source', async () => {
         
         // Arrange
-        expect.assertions(3);
+        expect.hasAssertions();
+
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
 
         // Act
-        let result = await sut.getInstance().getAll();
+        let result = await sut.getAll();
 
         // Assert
         expect(result).toBeTruthy();
-        expect(result.length).toBeGreaterThan(0);
-        expect(result[0].password).toBeUndefined();
+        expect(result instanceof Array).toBe(true);
+        expect(result.length).toBe(1);
+        expect(mockConnect).toBeCalledTimes(1);
 
     });
 
-    test('should return correct user (without password) when getById is given a valid id', async () => {
+    test('should resolve to an empty array when getAll retrieves no records from data source', async () => {
         
         // Arrange
-        expect.assertions(3);
-        Validator.isValidId = jest.fn().mockReturnValue(true);
+        expect.hasAssertions();
+        (mockConnect as jest.Mock).mockImplementation(() => {
+            return {
+                query: jest.fn().mockImplementation(() => { return { rows: [] } }), 
+                release: jest.fn()
+            }
+        });
 
         // Act
-        let result = await sut.getInstance().getById(1);
+        let result = await sut.getAll();
 
         // Assert
         expect(result).toBeTruthy();
-        expect(result.id).toBe(1);
-        expect(result.password).toBeUndefined();
+        expect(result instanceof Array).toBe(true);
+        expect(result.length).toBe(0);
+        expect(mockConnect).toBeCalledTimes(1);
 
     });
 
-    test('should throw BadRequestError when getById is given an invalid id', async () => {
+    test('should resolve to a User object when getById retrieves a record from data source', async () => {
 
         // Arrange
-        expect.assertions(1);
-        Validator.isValidId = jest.fn().mockReturnValue(false);
+        expect.hasAssertions();
 
-        // Act
-        try {
-            await sut.getInstance().getById(-1);
-        } catch (e) {
-
-            // Assert
-            expect(e instanceof BadRequestError).toBeTruthy();
-        }
-    });
-
+<<<<<<< HEAD
     test('should return correct user (without password) when getUserByUsername is given a known username', async () => {
         
         // Arrange
         expect.assertions(3);
         Validator.isValidStrings = jest.fn().mockReturnValue(true);
+=======
+        let mockUser = new User(1, 'un', 'pw', 'fn', 'ln', 'email', 'locked');
+        (mockMapper.mapUserResultSet as jest.Mock).mockReturnValue(mockUser);
+>>>>>>> 72a7a4499e63cc6d5e0c86e23614715f59d1c02f
 
         // Act
-        let result = await sut.getInstance().getUserByUsername('aanderson');
+        let result = await sut.getById(1);
 
         // Assert
         expect(result).toBeTruthy();
+<<<<<<< HEAD
         expect(result.username).toBe('aanderson');
         expect(result.password).toBeUndefined();
     
@@ -539,6 +562,10 @@ describe('userRepo', () => {
         } catch (e) {
             expect(e instanceof BadRequestError).toBeTruthy();
         }
+=======
+        expect(result instanceof User).toBe(true);
+
+>>>>>>> 72a7a4499e63cc6d5e0c86e23614715f59d1c02f
     });
 
 });

@@ -1,221 +1,164 @@
-import data from '../data/user-db';
 import { User } from '../models/user';
 import { CrudRepository } from './crud-repo';
-import Validator from '../util/validator';
-import {  
-    AuthenticationError, 
-    BadRequestError, 
+import {
     NotImplementedError, 
     ResourceNotFoundError, 
-    ResourcePersistenceError
+    ResourcePersistenceError,
+    InternalServerError
 } from '../errors/errors';
+import { PoolClient } from 'pg';
+import { connectionPool } from '..';
+import { mapUserResultSet } from '../util/result-set-mapper';
 
 export class UserRepository implements CrudRepository<User> {
 
-    private static instance: UserRepository;
+    baseQuery = `
+        select
+            au.id, 
+            au.username, 
+            au.password, 
+            au.first_name,
+            au.last_name,
+            au.email,
+            ur.name as role_name
+        from app_users au
+        join user_roles ur
+        on au.role_id = ur.id
+    `;
 
-    private constructor() {}
+    async getAll(): Promise<User[]> {
 
-    static getInstance() {
-        return !UserRepository.instance ? UserRepository.instance = new UserRepository() : UserRepository.instance;
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery}`;
+            let rs = await client.query(sql); // rs = ResultSet
+            return rs.rows.map(mapUserResultSet);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    
     }
 
-    getAll(): Promise<User[]> {
+    async getById(id: number): Promise<User> {
 
-        return new Promise<User[]>((resolve, reject) => {
+        let client: PoolClient;
 
-            setTimeout(() => {
+        try {
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.id = $1`;
+            let rs = await client.query(sql, [id]);
+            return mapUserResultSet(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    
+
+    }
+
+    async getUserByUniqueKey(key: string, val: string): Promise<User> {
+
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.${key} = $1`;
+            let rs = await client.query(sql, [val]);
+            return mapUserResultSet(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+        
+    
+    }
+
+    async getUserByCredentials(un: string, pw: string) {
+        
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            let sql = `${this.baseQuery} where au.username = $1 and au.password = $2`;
+            let rs = await client.query(sql, [un, pw]);
+            return mapUserResultSet(rs.rows[0]);
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    
+    }
+
+    async save(newUser: User): Promise<User> {
             
-                let users = [];
-    
-                for (let user of data) {
-                    users.push({...user});
-                }
-        
-                if (users.length == 0) {
-                    reject(new ResourceNotFoundError());
-                    return;
-                }
-        
-                resolve(users.map(this.removePassword));
-        
-            }, 250);
+        let client: PoolClient;
 
-        });
-    
-    }
+        try {
+            client = await connectionPool.connect();
 
-    getById(id: number): Promise<User> {
-        return new Promise<User>((resolve, reject) => {
+            // WIP: hacky fix since we need to make two DB calls
+            let roleId = (await client.query('select id from user_roles where name = $1', [newUser.role])).rows[0].id;
             
-            if (!Validator.isValidId(id)) {
-                reject(new BadRequestError());
-            }
+            let sql = `
+                insert into app_users (username, password, first_name, last_name, email, role_id) 
+                values ($1, $2, $3, $4, $5, $6) returning id
+            `;
 
-            setTimeout(() => {
-                
-                const user = {...data.find(user => user.id === id)};
-
-                if(Object.keys(user).length === 0) {
-                    reject(new ResourceNotFoundError());
-                    return;
-                }
-
-                resolve(this.removePassword(user));
-
-            }, 250);
-
-        });
-    }
-
-    getUserByUsername(un: string): Promise<User> {
-
-        return new Promise<User>((resolve, reject) => {
-
-            if (!Validator.isValidStrings(un)) {
-                reject(new BadRequestError());
-                return;
-            }
-           
-            setTimeout(() => {
-        
-                const user = {...data.filter(user => user.username === un)[0]};
-                
-                if (Object.keys(user).length == 0) {
-                    reject(new ResourceNotFoundError());
-                    return;
-                }
-        
-                resolve(this.removePassword(user));
-        
-            }, 250);
-
-        });
-        
-    
-    }
-
-    getUserByCredentials(un: string, pw: string) {
-        
-        return new Promise<User>((resolve, reject) => {
-
-            if (!Validator.isValidStrings(un, pw)) {
-                reject(new BadRequestError());
-                return;
-            }
-        
-            setTimeout(() => {
-        
-                const user = {...data.filter(user => user.username === un && user.password === pw).pop()!};
-                
-                if (Object.keys(user).length === 0) {
-                    reject(new AuthenticationError('Bad credentials provided.'));
-                    return;
-                }
-                
-                resolve(this.removePassword(user));
-        
-            }, 250);
-
-        });
-    
-    }
-
-    save(newUser: User): Promise<User> {
+            let rs = await client.query(sql, [newUser.username, newUser.password, newUser.firstName, newUser.lastName, newUser.email, roleId]);
             
-        return new Promise<User>((resolve, reject) => {
-        
-            if (!Validator.isValidObject(newUser, 'id')) {
-                reject(new BadRequestError('Invalid property values found in provided user.'));
-                return;
-            }
-        
-            setTimeout(() => {
-        
-                let conflict = data.filter(user => user.username == newUser.username).pop();
-        
-                if (conflict) {
-                    reject(new ResourcePersistenceError('The provided username is already taken.'));
-                    return;
-                }
-        
-                conflict = data.filter(user => user.email == newUser.email).pop();
-        
-                if (conflict) {
-                    reject(new ResourcePersistenceError('The provided email is already taken.'));
-                    return;
-                }
-        
-                newUser.id = (data.length) + 1;
-                data.push(newUser);
-        
-                resolve(this.removePassword(newUser));
-        
-            });
-
-        });
-    
-    }
-
-    update(updatedUser: User): Promise<boolean> {
-        
-        return new Promise<boolean>((resolve, reject) => {
-
-            if (!Validator.isValidObject(updatedUser) || !Validator.isValidId(updatedUser.id)) {
-                reject(new BadRequestError('Invalid user provided (invalid values found).'));
-                return;
-            }
-        
-            setTimeout(() => {
-        
-                let persistedUser = data.find(user => user.id === updatedUser.id);
-        
-                if (!persistedUser) {
-                    reject(new ResourceNotFoundError('No user found with provided id.'));
-                    return;
-                }
-                
-                if (persistedUser.username != updatedUser.username) {
-                    reject(new ResourcePersistenceError('Usernames cannot be updated.'));
-                    return;
-                }
-        
-                const conflict = data.filter(user => {
-                    if (user.id == updatedUser.id) return false;
-                    return user.email == updatedUser.email; 
-                }).pop();
-        
-                if (conflict) {
-                    reject(new ResourcePersistenceError('Provided email is taken by another user.'));
-                    return;
-                }
-    
-                persistedUser = updatedUser;
-    
-                resolve(true);
-        
-            });
-
-        });
-    
-    }
-
-    deleteById(id: number): Promise<boolean> {
-
-        return new Promise<boolean>((resolve, reject) => {
+            newUser.id = rs.rows[0].id;
             
-            if (!Validator.isValidId(id)) {
-                reject(new BadRequestError());
-            }
+            return newUser;
 
-            reject(new NotImplementedError());
-        });
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    
     }
 
-    private removePassword(user: User): User {
-        let usr = {...user};
-        delete usr.password;
-        return usr;   
+    async update(updatedUser: User): Promise<boolean> {
+        
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            let sql = ``;
+            let rs = await client.query(sql, []);
+            return true;
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+    
+    }
+
+    async deleteById(id: number): Promise<boolean> {
+
+        let client: PoolClient;
+
+        try {
+            client = await connectionPool.connect();
+            let sql = ``;
+            let rs = await client.query(sql, []);
+            return true;
+        } catch (e) {
+            throw new InternalServerError();
+        } finally {
+            client && client.release();
+        }
+
     }
 
 }
