@@ -36,6 +36,7 @@ export class UserRepository implements CrudRepository<User> {
             let rs = await client.query(sql); // rs = ResultSet
             return rs.rows.map(mapUserResultSet);
         } catch (e) {
+            console.log(e);
             throw new InternalServerError();
         } finally {
             client && client.release();
@@ -102,10 +103,23 @@ export class UserRepository implements CrudRepository<User> {
 
         try {
             client = await connectionPool.connect();
-            let sql = ``;
-            let rs = await client.query(sql, []);
-            return mapUserResultSet(rs.rows[0]);
+
+            // WIP: hacky fix since we need to make two DB calls
+            let roleId = (await client.query('select id from user_roles where name = $1', [newUser.role])).rows[0].id;
+            
+            let sql = `
+                insert into app_users (username, password, first_name, last_name, email, role_id) 
+                values ($1, $2, $3, $4, $5, $6) returning id
+            `;
+
+            let rs = await client.query(sql, [newUser.username, newUser.password, newUser.firstName, newUser.lastName, newUser.email, roleId]);
+            
+            newUser.id = rs.rows[0].id;
+            
+            return newUser;
+
         } catch (e) {
+            console.log(e);
             throw new InternalServerError();
         } finally {
             client && client.release();
@@ -144,7 +158,7 @@ export class UserRepository implements CrudRepository<User> {
         } finally {
             client && client.release();
         }
-        
+
     }
 
 }
