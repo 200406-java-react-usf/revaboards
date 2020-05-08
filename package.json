@@ -4,9 +4,12 @@
   "description": "",
   "main": "./build/index.js",
   "scripts": {
-    "start": "tsc && node ./build/index.js",
-    "test": "jest --watch --no-cache",
-    "coverage": "jest --coverage --no-cache"
+    "start": "node ./build/index.js",
+    "dev-start": "tsc && node ./build/index.js",
+    "test": "jest --no-cache",
+    "coverage": "jest --coverage --no-cache",
+    "watch-tests": "jest --watch --no-cache",
+    "build": "tsc"
   },
   "author": "Wezley Singleton",
   "license": "ISC",
