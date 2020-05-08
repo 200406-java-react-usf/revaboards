@@ -86,8 +86,7 @@ describe('userRepo', () => {
         
         // Arrange
         expect.hasAssertions();
-        console.log('*********************');
-        console.log(result);
+      
         (mockConnect as jest.Mock).mockImplementation(() => {
             return {
                 query: jest.fn().mockImplementation(() => { return { rows: [] } }), 
@@ -97,8 +96,7 @@ describe('userRepo', () => {
 
         // Act
         let result = await sut.getAll();
-        console.log('---------------------');
-        console.log(result);
+  
         // Assert
         expect(result).toBeTruthy();
         expect(result instanceof Array).toBe(true);
