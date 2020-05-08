@@ -18,5 +18,5 @@ phases:
 artifacts:
   files:
     - node_modules/**/*
-    - ./build/src/**/*
+    - ./build/**/*
     - package.json
