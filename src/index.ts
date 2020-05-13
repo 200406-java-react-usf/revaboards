@@ -38,6 +38,6 @@ app.use('/users', UserRouter);
 app.use('/posts', PostRouter);
 app.use('/auth', AuthRouter);
 
-app.listen(5000, () => {
+app.listen(8080, () => {
     console.log(`Application running and listening at: http://localhost:8080`);
 });
