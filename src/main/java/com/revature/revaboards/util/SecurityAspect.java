@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,13 @@ import java.util.List;
 @Component
 public class SecurityAspect {
 
+    private HttpServletRequest request;
+
+    @Autowired
+    public SecurityAspect(HttpServletRequest req) {
+        this.request = req;
+    }
+
     @Around("@annotation(com.revature.revaboards.web.security.Secured)")
     public Object secureEndpoint(ProceedingJoinPoint pjp) throws Throwable {
 
@@ -27,8 +35,7 @@ public class SecurityAspect {
         Secured ctrlrAnnotation = method.getAnnotation(Secured.class);
 
         List<String> allowedRoles = Arrays.asList(ctrlrAnnotation.allowedRoles());
-        HttpServletRequest req = (HttpServletRequest) pjp.getArgs()[0];
-        Principal principal = (Principal) req.getAttribute("principal");
+        Principal principal = (Principal) request.getAttribute("principal");
 
         if (principal == null) {
             throw new AuthorizationException("An unauthenticated request was made to a protected endpoint.");

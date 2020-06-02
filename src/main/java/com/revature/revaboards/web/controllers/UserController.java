@@ -29,7 +29,7 @@ public class UserController {
 
     @GetMapping
     @Secured(allowedRoles={"Admin", "Dev"})
-    public List<AppUserDTO> getAllUsers(HttpServletRequest req) {
+    public List<AppUserDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
