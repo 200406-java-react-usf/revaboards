@@ -1,4 +1,4 @@
 package com.revature.revaboards.web.filters;
 
-public class AppPreFilter {
+public class AuthFilter {
 }
