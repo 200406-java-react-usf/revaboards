@@ -26,7 +26,8 @@ public class UserRepository implements CrudRepository<AppUser> {
 
     @Override
     public AppUser findById(int id) {
-        return null;
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(AppUser.class, id);
     }
 
     @Override

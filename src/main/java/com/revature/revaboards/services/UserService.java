@@ -1,5 +1,8 @@
 package com.revature.revaboards.services;
 
+import com.revature.revaboards.entities.AppUser;
+import com.revature.revaboards.exceptions.BadRequestException;
+import com.revature.revaboards.exceptions.ResourceNotFoundException;
 import com.revature.revaboards.repositories.UserRepository;
 import com.revature.revaboards.web.dtos.AppUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,23 @@ public class UserService {
                        .stream()
                        .map(AppUserDTO::new)
                        .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly=true)
+    public AppUserDTO getUserById(int id) {
+
+        if (id <= 0) {
+            throw new BadRequestException();
+        }
+
+        AppUser retrievedUser = userRepo.findById(id);
+
+        if (retrievedUser == null) {
+            throw new ResourceNotFoundException();
+        }
+
+        return new AppUserDTO(retrievedUser);
+
     }
 
 }
