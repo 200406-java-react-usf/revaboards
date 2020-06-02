@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 @Repository
@@ -16,6 +17,14 @@ public class UserRepository implements CrudRepository<AppUser> {
     @Autowired
     public UserRepository(SessionFactory factory) {
         this.sessionFactory = factory;
+    }
+
+    public AppUser findUserByUsernameAndPassword(String username, String password) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("from AppUser u where u.username = :un and u.password = :pw", AppUser.class)
+                .setParameter("un", username)
+                .setParameter("pw", password)
+                .getSingleResult();
     }
 
     @Override
@@ -32,7 +41,9 @@ public class UserRepository implements CrudRepository<AppUser> {
 
     @Override
     public AppUser save(AppUser newObj) {
-        return null;
+        Session session = sessionFactory.getCurrentSession();
+        session.save(newObj);
+        return newObj;
     }
 
     @Override

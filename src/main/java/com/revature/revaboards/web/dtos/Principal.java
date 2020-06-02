@@ -1,5 +1,6 @@
 package com.revature.revaboards.web.dtos;
 
+import com.revature.revaboards.entities.AppUser;
 import com.revature.revaboards.entities.UserRole;
 
 import java.util.Objects;
@@ -12,6 +13,12 @@ public class Principal {
 
     public Principal() {
         super();
+    }
+
+    public Principal(AppUser u) {
+        this.id = u.getId();
+        this.username = u.getUsername();
+        this.role = u.getRole();
     }
 
     public Principal(int id, String username, UserRole role) {

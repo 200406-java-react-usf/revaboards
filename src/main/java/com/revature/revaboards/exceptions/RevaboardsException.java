@@ -8,6 +8,11 @@ public class RevaboardsException extends RuntimeException {
         this.status = status;
     }
 
+    public RevaboardsException(int status, Throwable cause) {
+        super(cause);
+        this.status = status;
+    }
+
     public RevaboardsException(int status, String msg) {
         super(msg);
         this.status = status;

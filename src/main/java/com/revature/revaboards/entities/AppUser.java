@@ -1,6 +1,9 @@
 package com.revature.revaboards.entities;
 
+import com.revature.revaboards.web.dtos.Principal;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 

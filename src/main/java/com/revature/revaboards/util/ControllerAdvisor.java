@@ -1,5 +1,6 @@
 package com.revature.revaboards.util;
 
+import com.revature.revaboards.exceptions.AuthenticationException;
 import com.revature.revaboards.exceptions.BadRequestException;
 import com.revature.revaboards.exceptions.ResourceNotFoundException;
 import com.revature.revaboards.exceptions.RevaboardsException;
@@ -22,6 +23,8 @@ public class ControllerAdvisor {
             resp.setStatus(404);
         } else if (e instanceof BadRequestException) {
             resp.setStatus(400);
+        } else if (e instanceof AuthenticationException) {
+            resp.setStatus(401);
         }
 
         return err;
