@@ -10,9 +10,9 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - mv target/revaboards-1.0-SNAPSHOT.war revaboards-1.0-SNAPSHOT.war
 
 artifacts:
   files:
     - .ebextensions/**/*
     - revaboards-1.0-SNAPSHOT.war
-  base-directory: target
