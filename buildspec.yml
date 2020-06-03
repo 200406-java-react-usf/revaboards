@@ -13,5 +13,6 @@ phases:
 
 artifacts:
   files:
-#    - .ebextensions/**/*
-    - target/revaboards-1.0-SNAPSHOT.war
+    - .ebextensions/**/*
+    - revaboards-1.0-SNAPSHOT.war
+  base-directory: target
