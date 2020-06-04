@@ -4,9 +4,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.cfg.Environment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -15,23 +13,22 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import java.util.Properties;
 
 @Configuration
-@PropertySource("classpath:app.properties")
 @EnableTransactionManagement
 public class OrmConfig {
 
-    @Value("${db.driver}")
+    @Value("#{System.getEnv(\"db.driver\")}")
     private String dbDriver;
 
-    @Value("${db.url}")
+    @Value("#{System.getEnv(\"db.url\")}")
     private String dbUrl;
 
-    @Value("${db.username}")
+    @Value("#{System.getEnv(\"db.username\")}")
     private String dbUsername;
 
-    @Value("${db.password}")
+    @Value("#{System.getEnv(\"db.password\")}")
     private String dbPassword;
 
-    @Value("${db.schema}")
+    @Value("#{System.getEnv(\"db.schema\")}")
     private String dbSchema;
 
     @Bean
