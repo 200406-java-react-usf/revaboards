@@ -1,28 +1,32 @@
 import url from 'url';
 import express from 'express';
-import { User } from '../models/user';
 import AppConfig from '../config/app';
+import { isEmptyObject } from '../util/validator';
+import { ParsedUrlQuery } from 'querystring';
+import { adminGuard } from '../middleware/auth-middleware';
 
 export const UserRouter = express.Router();
 
 const userService = AppConfig.userService;
 
-UserRouter.get('', async (req, resp) => {
+UserRouter.get('', adminGuard, async (req, resp) => {
+
     try {
 
         let reqURL = url.parse(req.url, true);
 
-        if(Object.keys(reqURL.query).length !== 0) {
-            let payload = await userService.getUserByUniqueKey({...reqURL.query});;
-            return resp.status(200).json(payload);
+        if(!isEmptyObject<ParsedUrlQuery>(reqURL.query)) {
+            let payload = await userService.getUserByUniqueKey({...reqURL.query});
+            resp.status(200).json(payload);
         } else {
             let payload = await userService.getAllUsers();
-            return resp.status(200).json(payload);
+            resp.status(200).json(payload);
         }
 
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        resp.status(e.statusCode).json(e);
     }
+
 });
 
 UserRouter.get('/:id', async (req, resp) => {
@@ -31,7 +35,7 @@ UserRouter.get('/:id', async (req, resp) => {
         let payload = await userService.getUserById(id);
         return resp.status(200).json(payload);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 });
 
@@ -41,9 +45,9 @@ UserRouter.post('', async (req, resp) => {
     console.log(req.body);
     try {
         let newUser = await userService.addNewUser(req.body);
-        return resp.status(201).json(newUser).send();
+        return resp.status(201).json(newUser);
     } catch (e) {
-        return resp.status(e.statusCode).json(e).send();
+        return resp.status(e.statusCode).json(e);
     }
 
 });
